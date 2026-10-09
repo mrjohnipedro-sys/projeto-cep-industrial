@@ -3,109 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEP Industrial - Painel</title>
+    <title>INSPEÇÃO DE PROCESSO</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h1, h2 { color: #333; }
-        .metric { display: inline-block; margin-right: 20px; }
-        .metric-value { font-size: 24px; font-weight: bold; color: #007bff; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #218838; }
-        .alert { padding: 10px; background-color: #d4edda; color: #155724; border-radius: 4px; margin-top: 10px; display: none; }
+        body { font-family: Arial, sans-serif; background-color: #eef2f5; padding: 15px; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border: 2px solid #333; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .header-title { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
+        .grid-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
+        .cell { border: 1px solid #777; padding: 5px; background: #f9f9f9; }
+        .cell-header { font-size: 11px; font-weight: bold; color: #333; text-transform: uppercase; margin-bottom: 3px; display: block; }
+        .cell-red { background-color: #d9534f; color: white; }
+        .cell-red .cell-header { color: white; }
+        input, select { width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; font-size: 13px; font-weight: bold; }
+        .actions { display: flex; gap: 15px; margin-top: 15px; }
+        .btn-salvar { background-color: #28a745; color: white; font-size: 22px; font-weight: bold; border: none; padding: 12px; flex: 3; cursor: pointer; border-radius: 4px; }
+        .btn-limpar { background-color: #ffc107; color: #000; font-size: 18px; font-weight: bold; border: none; padding: 12px; flex: 1; cursor: pointer; border-radius: 4px; }
+        .btn-salvar:hover { background-color: #218838; }
+        .btn-limpar:hover { background-color: #e0a800; }
+        .alert { display: none; padding: 10px; margin-top: 10px; font-weight: bold; text-align: center; border-radius: 4px; }
+        .alert-success { background-color: #d4edda; color: #155724; }
+        .alert-error { background-color: #f8d7da; color: #721c24; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+        th, td { border: 1px solid #333; padding: 6px; text-align: center; }
+        th { background-color: #e9ecef; }
     </style>
 </head>
 <body>
-    <h1>Painel de Controlo Estatístico do Processo (CEP)</h1>
 
-    <!-- Formulário de Entrada de Medições -->
-    <div class="card">
-        <h2>Registar Nova Medição</h2>
-        <form id="form-medicao">
-            <div class="form-group">
-                <label for="equipamento">Equipamento:</label>
-                <input type="text" id="equipamento" value="CNC-01" required>
-            </div>
-            <div class="form-group">
-                <label for="lote">Lote:</label>
-                <input type="text" id="lote" value="LOT-202610-A" required>
-            </div>
-            <div class="form-group">
-                <label for="valor">Valor Medido (mm):</label>
-                <input type="number" step="0.0001" id="valor" placeholder="Ex: 25.0020" required>
-            </div>
-            <button type="submit">Enviar Medição</button>
-        </form>
-        <div id="mensagem-sucesso" class="alert">Medição enviada com sucesso!</div>
+<div class="container">
+    <div class="header-title">
+        INSPEÇÃO PROCESSO - FURO (Form. Nº F28/04_rev04)
     </div>
 
-    <!-- Indicadores CEP -->
-    <div class="card" id="cep-data">Carregando dados do processo...</div>
+    <form id="form-inspecao">
+        <div class="grid-table">
+            <div class="cell">
+                <span class="cell-header">Número da OPI</span>
+                <input type="text" id="opi" placeholder="Ex: 231158" required>
+            </div>
+            <div class="cell">
+                <span class="cell-header">Referência Produto</span>
+                <input type="text" id="refProduto" placeholder="Ex: 01087500B" required>
+            </div>
+            <div class="cell cell-red">
+                <span class="cell-header">Ø Furo Centro (mm)</span>
+                <input type="number" step="0.01" id="furoCentro" placeholder="Mín: 71.3 | Máx: 71.7" required>
+            </div>
+            <div class="cell cell-red">
+                <span class="cell-header">Cota Z (mm)</span>
+                <input type="number" step="0.01" id="cotaZ" placeholder="Mín: 48.0 | Máx: 48.5" required>
+            </div>
 
-    <!-- Utilizadores -->
-    <div class="card" id="user-data">Carregando utilizadores...</div>
+            <div class="cell">
+                <span class="cell-header">Operador</span>
+                <input type="text" id="operador" placeholder="Nome do Operador" required>
+            </div>
+            <div class="cell">
+                <span class="cell-header">Nº Origem do Aço</span>
+                <input type="text" id="origemAco" placeholder="Origem">
+            </div>
+            <div class="cell">
+                <span class="cell-header">Nº Lote do Aço</span>
+                <input type="text" id="loteAco" placeholder="Lote do Aço">
+            </div>
+            <div class="cell cell-red">
+                <span class="cell-header">Cota H (mm)</span>
+                <input type="number" step="0.01" id="cotaH" placeholder="Valor" required>
+            </div>
 
-    <script>
-        const API_URL = "https://projeto-cep-industrial.onrender.com/api";
+            <div class="cell">
+                <span class="cell-header">Rebarba</span>
+                <select id="rebarba">
+                    <option value="OK">OK / NÃO</option>
+                    <option value="NOK">COM REBARBA</option>
+                </select>
+            </div>
+            <div class="cell">
+                <span class="cell-header">Ø Furo PCD (mm)</span>
+                <input type="number" step="0.01" id="furoPcd" placeholder="Valor">
+            </div>
+            <div class="cell">
+                <span class="cell-header">Espessura (mm)</span>
+                <input type="number" step="0.01" id="espessura" placeholder="Valor">
+            </div>
+            <div class="cell">
+                <span class="cell-header">Estado</span>
+                <input type="text" value="EM PRODUÇÃO" readonly>
+            </div>
+        </div>
 
-        function carregarDashboard() {
-            fetch(`${API_URL}/Cep/dashboard`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('cep-data').innerHTML = `
-                        <h2>Equipamento: ${data.equipamento}</h2>
-                        <p>Lote: ${data.lote}</p>
-                        <div class="metric"><span class="metric-value">${data.mediaGeral}</span><br>Média Geral</div>
-                        <div class="metric"><span class="metric-value">${data.cp}</span><br>Cp</div>
-                        <div class="metric"><span class="metric-value">${data.cpk}</span><br>Cpk</div>
-                        <div class="metric"><span class="metric-value">${data.totalAmostras}</span><br>Amostras</div>
-                        <p>Status: <strong>${data.status}</strong></p>
-                    `;
-                });
-        }
+        <div class="actions">
+            <button type="submit" class="btn-salvar">SALVAR</button>
+            <button type="button" class="btn-limpar" onclick="document.getElementById('form-inspecao').reset()">LIMPAR</button>
+        </div>
+    </form>
 
-        function carregarUsuarios() {
-            fetch(`${API_URL}/User`)
-                .then(res => res.json())
-                .then(users => {
-                    let html = '<h2>Utilizadores do Sistema</h2><ul>';
-                    users.forEach(u => {
-                        html += `<li><strong>${u.name}</strong> - ${u.role} (${u.email})</li>`;
-                    });
-                    html += '</ul>';
-                    document.getElementById('user-data').innerHTML = html;
-                });
-        }
+    <div id="msg-box" class="alert"></div>
 
-        document.getElementById('form-medicao').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const payload = {
-                equipamento: document.getElementById('equipamento').value,
-                lote: document.getElementById('lote').value,
-                valor: parseFloat(document.getElementById('valor').value)
-            };
+    <h3 style="margin-top:25px;">Histórico de Inspeções Salvas</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Data / Hora</th>
+                <th>Operador</th>
+                <th>OPI</th>
+                <th>Ref. Produto</th>
+                <th>Ø Furo Centro</th>
+                <th>Cota Z</th>
+                <th>Cota H</th>
+                <th>Rebarba</th>
+            </tr>
+        </thead>
+        <tbody id="tabela-historico">
+            <tr><td colspan="8">Nenhum registo efetuado.</td></tr>
+        </tbody>
+    </table>
+</div>
 
-            fetch(`${API_URL}/Cep/medicao`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
+<script>
+    const API_URL = "https://projeto-cep-industrial.onrender.com/api";
+
+    function carregarHistorico() {
+        fetch(`${API_URL}/Cep/dashboard`)
             .then(res => res.json())
-            .then(data => {
-                const msg = document.getElementById('mensagem-sucesso');
-                msg.style.display = 'block';
-                document.getElementById('valor').value = '';
-                setTimeout(() => msg.style.display = 'none', 3000);
-                carregarDashboard();
+            .then(dados => {
+                if (dados && dados.length > 0) {
+                    let html = '';
+                    dados.forEach(i => {
+                        html += `
+                            <tr>
+                                <td>${i.dataHora}</td>
+                                <td>${i.operador}</td>
+                                <td>${i.numeroOpi}</td>
+                                <td>${i.refProduto}</td>
+                                <td><strong>${i.furoCentro}</strong></td>
+                                <td><strong>${i.cotaZ}</strong></td>
+                                <td><strong>${i.cotaH}</strong></td>
+                                <td>${i.rebarba}</td>
+                            </tr>
+                        `;
+                    });
+                    document.getElementById('tabela-historico').innerHTML = html;
+                }
             });
-        });
+    }
 
-        carregarDashboard();
-        carregarUsuarios();
-    </script>
+    document.getElementById('form-inspecao').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const payload = {
+            operador: document.getElementById('operador').value,
+            numeroOpi: document.getElementById('opi').value,
+            refProduto: document.getElementById('refProduto').value,
+            origemAco: document.getElementById('origemAco').value,
+            loteAco: document.getElementById('loteAco').value,
+            furoCentro: parseFloat(document.getElementById('furoCentro').value) || 0,
+            cotaZ: parseFloat(document.getElementById('cotaZ').value) || 0,
+            cotaH: parseFloat(document.getElementById('cotaH').value) || 0,
+            furoPcd: parseFloat(document.getElementById('furoPcd').value) || 0,
+            espessura: parseFloat(document.getElementById('espessura').value) || 0,
+            rebarba: document.getElementById('rebarba').value
+        };
+
+        fetch(`${API_URL}/Cep/medicao`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(async res => {
+            const box = document.getElementById('msg-box');
+            if (res.ok) {
+                box.className = "alert alert-success";
+                box.innerText = "Registo de inspeção salvo com sucesso!";
+                box.style.display = "block";
+                document.getElementById('form-inspecao').reset();
+                carregarHistorico();
+            } else {
+                box.className = "alert alert-error";
+                box.innerText = "Por favor, preencha todos os campos obrigatórios.";
+                box.style.display = "block";
+            }
+            setTimeout(() => box.style.display = "none", 4000);
+        });
+    });
+
+    carregarHistorico();
+</script>
+
 </body>
 </html>
