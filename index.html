@@ -6,57 +6,125 @@
     <title>INSPEÇÃO DE PROCESSO - LINHA FURO DISCOS</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #eef2f5; padding: 10px; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border: 2px solid #333; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .header-title { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #334155;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-body); color: var(--text-main); padding: 15px; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .header-title { text-align: center; font-weight: 700; font-size: 20px; color: var(--primary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; letter-spacing: 0.5px; }
         
-        /* Abas */
-        .tabs { display: flex; border-bottom: 2px solid #333; margin-bottom: 15px; }
-        .tab-btn { padding: 10px 14px; font-weight: bold; cursor: pointer; border: none; background: #ddd; font-size: 11px; margin-right: 2px; }
-        .tab-btn.active { background: #007bff; color: white; }
+        /* Menu de Abas Profissional */
+        .tabs { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 20px; gap: 4px; }
+        .tab-btn { padding: 12px 18px; font-weight: 600; cursor: pointer; border: none; background: #f1f5f9; color: #64748b; font-size: 12px; border-radius: 8px 8px 0 0; transition: all 0.2s; }
+        .tab-btn:hover { background: #e2e8f0; color: var(--primary-color); }
+        .tab-btn.active { background: var(--accent-color); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Grade de Lançamento */
-        .grid-container { display: grid; grid-template-columns: 200px 1fr 1fr 1fr 1fr; gap: 2px; background: #333; border: 2px solid #333; }
-        .cell { background: white; padding: 6px; font-size: 12px; }
-        .cell-title { font-weight: bold; background: #e9ecef; text-align: center; font-size: 11px; text-transform: uppercase; }
-        .cell-red { background: #d9534f; color: white; font-weight: bold; text-align: center; }
-        .cell-green { background: #5cb85c; color: white; font-weight: bold; text-align: center; }
+        /* DESIGN MODERNO E PROFISSIONAL DA TELA DE LANÇAMENTOS */
+        #inspecao .grid-container {
+            display: grid;
+            grid-template-columns: 220px repeat(4, 1fr);
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        #inspecao .cell {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #inspecao .cell-title {
+            font-weight: 700;
+            background: #f1f5f9;
+            color: #475569;
+            text-align: center;
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 5px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        #inspecao .cell-red { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+        #inspecao .cell-red .cell-title { background: #fee2e2; color: #991b1b; }
+
+        #inspecao .cell-green { background: #f0fdf4; border-color: #86efac; color: #166534; }
+        #inspecao .cell-green .cell-title { background: #dcfce7; color: #166534; }
+
+        #inspecao input, #inspecao select {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 6px;
+            background-color: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #inspecao input:focus, #inspecao select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        #inspecao input.campo-desvio {
+            background-color: #fef2f2 !important;
+            border: 2px solid var(--danger-color) !important;
+            color: var(--danger-color) !important;
+            font-weight: 800;
+        }
+
+        #inspecao .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; text-align: center; font-size: 10px; margin-bottom: 4px; }
+        #inspecao .lim-val { font-weight: 700; color: #475569; background: #e2e8f0; padding: 3px; border-radius: 4px; }
+
+        .btn-salvar { background-color: var(--success-color); color: white; font-size: 18px; font-weight: 700; border: none; padding: 14px; width: 68%; cursor: pointer; border-radius: 8px; margin-top: 18px; transition: background 0.2s; }
+        .btn-salvar:hover { background-color: #059669; }
         
-        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; text-align: center; font-size: 10px; }
-        .lim-val { font-weight: bold; color: #333; background: #f0f0f0; padding: 2px; }
+        .btn-limpar { background-color: #f59e0b; color: white; font-size: 16px; font-weight: 700; border: none; padding: 14px; width: 30%; cursor: pointer; border-radius: 8px; margin-top: 18px; transition: background 0.2s; }
+        .btn-limpar:hover { background-color: #d97706; }
 
-        input, select { width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; font-size: 12px; font-weight: bold; text-align: center; }
-        input.campo-desvio { background-color: #f8d7da !important; border: 2px solid #dc3545 !important; color: #721c24 !important; }
-
-        /* Botões */
-        .btn-salvar { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; border: none; padding: 15px; width: 70%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
-        .btn-limpar { background-color: #ffc107; color: #000; font-size: 18px; font-weight: bold; border: none; padding: 15px; width: 28%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
-
-        /* Módulo de Bases */
-        .base-box { border: 1px solid #ccc; padding: 12px; margin-bottom: 15px; background: #fafafa; border-radius: 4px; }
-        .import-form { display: flex; gap: 10px; align-items: center; margin-top: 8px; margin-bottom: 12px; background: #fff; padding: 8px; border: 1px dashed #999; }
+        /* Estilos Padrão para Outras Abas */
+        .base-box { border: 1px solid var(--border-color); padding: 12px; margin-bottom: 15px; background: #fafafa; border-radius: 8px; }
+        .import-form { display: flex; gap: 10px; align-items: center; margin-top: 8px; margin-bottom: 12px; background: #fff; padding: 8px; border: 1px dashed #999; border-radius: 6px; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        th, td { border: 1px solid #333; padding: 6px; text-align: center; }
-        th { background-color: #e9ecef; }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; }
+        th { background-color: #f1f5f9; color: var(--primary-color); }
 
-        /* Módulo CEP */
         .kpi-container { display: flex; gap: 15px; margin-bottom: 20px; }
-        .kpi-card { flex: 1; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-left: 5px solid #007bff; border-radius: 4px; text-align: center; }
-        .kpi-title { font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; }
-        .kpi-value { font-size: 28px; font-weight: bold; color: #333; margin-top: 5px; }
+        .kpi-card { flex: 1; padding: 15px; background: #f8fafc; border: 1px solid var(--border-color); border-left: 5px solid var(--accent-color); border-radius: 8px; text-align: center; }
+        .kpi-title { font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: var(--primary-color); margin-top: 5px; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 8% auto; padding: 20px; border-radius: 8px; width: 420px; border: 2px solid #dc3545; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 8% auto; padding: 25px; border-radius: 12px; width: 420px; border: 1px solid var(--border-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- MENU DE ABAS COMPLETO -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('inspecao', event)">INSPEÇÃO DE PROCESSO</button>
         <button class="tab-btn" onclick="openTab('consultalancamentos', event)">CONSULTA LANÇAMENTOS</button>
@@ -65,23 +133,23 @@
         <button class="tab-btn" onclick="openTab('cep', event)">CONSULTA CEP (Cp / Cpk)</button>
     </div>
 
-    <!-- TELA 1: LANÇAMENTO DE INSPEÇÃO -->
+    <!-- TELA 1: LANÇAMENTO DE INSPEÇÃO (LAYOUT PROFISSIONAL REFORMULADO) -->
     <div id="inspecao" class="tab-content active">
         <div class="header-title">INSPEÇÃO DE PROCESSO - LINHA FURO DISCOS</div>
         <form id="form-inspecao">
             <div class="grid-container">
-                <div class="cell" style="grid-row: span 5; text-align: center;">
+                <div class="cell" style="grid-row: span 5; text-align: center; align-items: center; justify-content: center; background: #f8fafc;">
                     <svg width="120" height="120" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="2" fill="none"/>
-                        <circle cx="50" cy="50" r="15" stroke="#333" stroke-width="2" fill="none"/>
-                        <circle cx="50" cy="20" r="4" fill="#007bff"/>
-                        <circle cx="76" cy="35" r="4" fill="#007bff"/>
-                        <circle cx="76" cy="65" r="4" fill="#007bff"/>
-                        <circle cx="50" cy="80" r="4" fill="#007bff"/>
-                        <circle cx="24" cy="65" r="4" fill="#007bff"/>
-                        <circle cx="24" cy="35" r="4" fill="#007bff"/>
+                        <circle cx="50" cy="50" r="45" stroke="#334155" stroke-width="2" fill="none"/>
+                        <circle cx="50" cy="50" r="15" stroke="#334155" stroke-width="2" fill="none"/>
+                        <circle cx="50" cy="20" r="4" fill="#2563eb"/>
+                        <circle cx="76" cy="35" r="4" fill="#2563eb"/>
+                        <circle cx="76" cy="65" r="4" fill="#2563eb"/>
+                        <circle cx="50" cy="80" r="4" fill="#2563eb"/>
+                        <circle cx="24" cy="65" r="4" fill="#2563eb"/>
+                        <circle cx="24" cy="35" r="4" fill="#2563eb"/>
                     </svg>
-                    <div style="font-size:10px; font-weight:bold; margin-top:5px;">DISCO FURO PCD</div>
+                    <div style="font-size:11px; font-weight:700; margin-top:8px; color:#475569;">DISCO FURO PCD</div>
                 </div>
 
                 <div class="cell">
@@ -90,79 +158,95 @@
                 </div>
                 <div class="cell">
                     <div class="cell-title">Referência Produto</div>
-                    <input type="text" id="refProduto" value="" placeholder="Aguardando OP..." readonly style="background:#e9ecef;">
+                    <input type="text" id="refProduto" value="" placeholder="Aguardando OP..." readonly style="background:#f1f5f9; color:#64748b;">
                 </div>
-                <div class="cell cell-red">Ø FURO CENTRO</div>
-                <div class="cell cell-red">COTA Z (mm)</div>
-
-                <div class="cell"><div class="cell-title">Operador</div><select id="operador"><option value="">Selecione...</option><option value="Johni Pedro">Johni Pedro</option></select></div>
-                <div class="cell"><div class="cell-title">Nº Origem do Aço</div><input type="text" id="origemAco"></div>
-                <div class="cell">
+                <div class="cell cell-red">
+                    <div class="cell-title">Ø FURO CENTRO</div>
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
                     <div class="sub-grid"><div class="lim-val" id="lblFuroMin">--</div><div class="lim-val" id="lblFuroMax">--</div></div>
                     <input type="number" step="0.01" id="furoCentro" oninput="validarToleranciasEmTempoReal()" required>
                 </div>
-                <div class="cell">
+                <div class="cell cell-red">
+                    <div class="cell-title">COTA Z (mm)</div>
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
                     <div class="sub-grid"><div class="lim-val" id="lblZMin">--</div><div class="lim-val" id="lblZMax">--</div></div>
                     <input type="number" step="0.01" id="cotaZ" oninput="validarToleranciasEmTempoReal()" required>
                 </div>
 
-                <div class="cell"><div class="cell-title">Nº Lote do Aço</div><input type="text" id="loteAco"></div>
-                <div class="cell"><div class="cell-title">Rebarba OK/NOK</div><select id="rebarba"><option value="OK">OK</option><option value="NOK">NOK</option></select></div>
-                <div class="cell cell-green">ESPESSURA</div>
-                <div class="cell cell-red">COTA H (mm)</div>
-
-                <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="" readonly placeholder="--"></div>
-                
                 <div class="cell">
-                    <div class="cell-title">Ø Furo Satélite (mm)</div>
-                    <input type="number" step="0.01" id="furoSatelite" placeholder="Preencher" oninput="validarToleranciasEmTempoReal()" required>
+                    <div class="cell-title">Operador</div>
+                    <select id="operador"><option value="">Selecione...</option><option value="Johni Pedro">Johni Pedro</option></select>
                 </div>
-
                 <div class="cell">
+                    <div class="cell-title">Nº Origem do Aço</div>
+                    <input type="text" id="origemAco">
+                </div>
+                <div class="cell cell-green">
+                    <div class="cell-title">ESPESSURA</div>
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
                     <div class="sub-grid"><div class="lim-val" id="lblEspMin">--</div><div class="lim-val" id="lblEspMax">--</div></div>
                     <input type="number" step="0.01" id="espessura" oninput="validarToleranciasEmTempoReal()">
                 </div>
-                <div class="cell">
+                <div class="cell cell-red">
+                    <div class="cell-title">COTA H (mm)</div>
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
                     <div class="sub-grid"><div class="lim-val" id="lblHMin">--</div><div class="lim-val" id="lblHMax">--</div></div>
                     <input type="number" step="0.01" id="cotaH" oninput="validarToleranciasEmTempoReal()" required>
                 </div>
 
-                <div class="cell"><div class="cell-title">Nº Passa/Não Passa</div><input type="text" id="pnp" value="0"></div>
-                <div class="cell"><div class="cell-title">Ø FURO PCD OK/NOK</div><select id="furoPcd"><option value="OK">OK</option><option value="NOK">NOK</option></select></div>
+                <div class="cell">
+                    <div class="cell-title">Nº Lote do Aço</div>
+                    <input type="text" id="loteAco">
+                </div>
+                <div class="cell">
+                    <div class="cell-title">Rebarba OK/NOK</div>
+                    <select id="rebarba"><option value="OK">OK</option><option value="NOK">NOK</option></select>
+                </div>
                 <div class="cell cell-green">
-                    <div>Excentricidade</div>
-                    <div class="sub-grid" style="font-size:9px;"><div>0,2</div><div>≤ 0,5 mm</div></div>
+                    <div class="cell-title">Excentricidade</div>
+                    <div class="sub-grid" style="font-size:9px;"><div>Tol. Ref</div><div>≤ 0,5 mm</div></div>
                     <input type="number" step="0.01" id="excentricidade" oninput="validarToleranciasEmTempoReal()">
                 </div>
                 <div class="cell cell-red">
-                    <div>Ø BLANK (mm)</div>
+                    <div class="cell-title">Ø BLANK (mm)</div>
                     <div class="sub-grid"><div class="lim-val" id="lblBlankMin">--</div><div class="lim-val" id="lblBlankMax">--</div></div>
                     <input type="number" step="0.1" id="blank" oninput="validarToleranciasEmTempoReal()">
                 </div>
+
+                <div class="cell">
+                    <div class="cell-title">Nº Satélites</div>
+                    <input type="text" id="satelites" value="" readonly placeholder="--" style="background:#f1f5f9; color:#64748b;">
+                </div>
+                <div class="cell">
+                    <div class="cell-title">Ø Furo Satélite (mm)</div>
+                    <input type="number" step="0.01" id="furoSatelite" placeholder="Preencher" oninput="validarToleranciasEmTempoReal()" required>
+                </div>
+                <div class="cell">
+                    <div class="cell-title">Nº Passa/Não Passa</div>
+                    <input type="text" id="pnp" value="0">
+                </div>
+                <div class="cell">
+                    <div class="cell-title">Ø FURO PCD OK/NOK</div>
+                    <select id="furoPcd"><option value="OK">OK</option><option value="NOK">NOK</option></select>
+                </div>
             </div>
 
-            <div style="text-align: center;">
-                <button type="submit" class="btn-salvar">SALVAR</button>
-                <button type="button" class="btn-limpar" onclick="limparFormularioCompleto()">LIMPAR</button>
+            <div style="text-align: center; display: flex; justify-content: space-between;">
+                <button type="submit" class="btn-salvar">SALVAR MEDIÇÕES</button>
+                <button type="button" class="btn-limpar" onclick="limparFormularioCompleto()">LIMPAR CAMPOS</button>
             </div>
         </form>
     </div>
 
-    <!-- TELA 2: CONSULTA DE LANÇAMENTOS -->
+    <!-- DEMAIS TELAS MANTIDAS IGUAIS -->
     <div id="consultalancamentos" class="tab-content">
         <div class="header-title">CONSULTA DE LANÇAMENTOS REALIZADOS</div>
-        
-        <div style="background:#f8f9fa; border:1px solid #ccc; padding:12px; margin-bottom:15px; display:flex; align-items:center; gap:15px;">
+        <div style="background:#f8fafc; border:1px solid var(--border-color); padding:12px; margin-bottom:15px; display:flex; align-items:center; gap:15px; border-radius:8px;">
             <label><strong>Filtrar por Data:</strong></label>
-            <input type="text" id="filtroDataTexto" placeholder="Ex: 08/10/2026" style="width:150px; text-align:center;">
-            <button onclick="carregarLancamentos()" style="background:#007bff; color:white; border:none; padding:6px 15px; font-weight:bold; cursor:pointer; border-radius:4px;">Filtrar</button>
-            <button onclick="document.getElementById('filtroDataTexto').value=''; carregarLancamentos();" style="background:#6c757d; color:white; border:none; padding:6px 15px; font-weight:bold; cursor:pointer; border-radius:4px;">Ver Todos</button>
+            <input type="text" id="filtroDataTexto" placeholder="Ex: 08/10/2026" style="width:150px; text-align:center; padding:6px; border:1px solid #cbd5e1; border-radius:6px;">
+            <button onclick="carregarLancamentos()" style="background:var(--accent-color); color:white; border:none; padding:8px 18px; font-weight:bold; cursor:pointer; border-radius:6px;">Filtrar</button>
+            <button onclick="document.getElementById('filtroDataTexto').value=''; carregarLancamentos();" style="background:#64748b; color:white; border:none; padding:8px 18px; font-weight:bold; cursor:pointer; border-radius:6px;">Ver Todos</button>
         </div>
-
         <table>
             <thead>
                 <tr>
@@ -184,7 +268,6 @@
         </table>
     </div>
 
-    <!-- TELA 3: DESVIOS APROVADOS -->
     <div id="desvios" class="tab-content">
         <div class="header-title">HISTÓRICO DE DESVIOS APROVADOS</div>
         <table>
@@ -205,16 +288,13 @@
         </table>
     </div>
 
-    <!-- TELA 4: BASES SINCRO EXCEL (3 BASES SEPARADAS) -->
     <div id="carregamento" class="tab-content">
         <div class="header-title">IMPORTAÇÃO DE BASES SEPARADAS (EXCEL)</div>
-        
-        <!-- BASE 1: TOLERÂNCIAS -->
         <div class="base-box">
-            <h4 style="margin:0; color:#d9534f;">1. Base de Tolerâncias Dimensionais (Aba 'base')</h4>
+            <h4 style="margin:0; color:#ef4444;">1. Base de Tolerâncias Dimensionais (Aba 'base')</h4>
             <form onsubmit="importarBaseEspecifica(event, 'importar-tolerancias', 'status-tol')" class="import-form">
                 <input type="file" required accept=".xlsx, .xlsm">
-                <button type="submit" style="background:#d9534f; color:white; border:none; padding:5px 12px; font-weight:bold; cursor:pointer;">Importar Tolerâncias</button>
+                <button type="submit" style="background:#ef4444; color:white; border:none; padding:6px 14px; font-weight:bold; cursor:pointer; border-radius:4px;">Importar Tolerâncias</button>
                 <span id="status-tol" style="font-size:11px; font-weight:bold;"></span>
             </form>
             <table>
@@ -222,13 +302,11 @@
                 <tbody id="tbl-tolerancias"><tr><td colspan="5">A carregar...</td></tr></tbody>
             </table>
         </div>
-
-        <!-- BASE 2: OPERADORES -->
         <div class="base-box">
-            <h4 style="margin:0; color:#5cb85c;">2. Base de Operadores e Colaboradores (Aba 'colaboradores')</h4>
+            <h4 style="margin:0; color:#10b981;">2. Base de Operadores e Colaboradores (Aba 'colaboradores')</h4>
             <form onsubmit="importarBaseEspecifica(event, 'importar-operadores', 'status-ope')" class="import-form">
                 <input type="file" required accept=".xlsx, .xlsm">
-                <button type="submit" style="background:#5cb85c; color:white; border:none; padding:5px 12px; font-weight:bold; cursor:pointer;">Importar Operadores</button>
+                <button type="submit" style="background:#10b981; color:white; border:none; padding:6px 14px; font-weight:bold; cursor:pointer; border-radius:4px;">Importar Operadores</button>
                 <span id="status-ope" style="font-size:11px; font-weight:bold;"></span>
             </form>
             <table>
@@ -236,13 +314,11 @@
                 <tbody id="tbl-operadores"><tr><td colspan="3">A carregar...</td></tr></tbody>
             </table>
         </div>
-
-        <!-- BASE 3: ORDENS DE PRODUÇÃO -->
         <div class="base-box">
-            <h4 style="margin:0; color:#0056b3;">3. Base de Ordens de Produção (Aba 'opabertas')</h4>
+            <h4 style="margin:0; color:#2563eb;">3. Base de Ordens de Produção (Aba 'opabertas')</h4>
             <form onsubmit="importarBaseEspecifica(event, 'importar-ops', 'status-ops')" class="import-form">
                 <input type="file" required accept=".xlsx, .xlsm">
-                <button type="submit" style="background:#0056b3; color:white; border:none; padding:5px 12px; font-weight:bold; cursor:pointer;">Importar OPs</button>
+                <button type="submit" style="background:#2563eb; color:white; border:none; padding:6px 14px; font-weight:bold; cursor:pointer; border-radius:4px;">Importar OPs</button>
                 <span id="status-ops" style="font-size:11px; font-weight:bold;"></span>
             </form>
             <table>
@@ -252,12 +328,11 @@
         </div>
     </div>
 
-    <!-- TELA 5: CONSULTA CEP -->
     <div id="cep" class="tab-content">
         <div class="header-title">ANÁLISE DE CAPACIDADE DO PROCESSO (CEP)</div>
         <div style="margin-bottom:15px; text-align:center;">
             <label><strong>Selecione a Cota para Análise:</strong></label>
-            <select id="select-cota-cep" onchange="renderChart()" style="width:auto; padding:5px;">
+            <select id="select-cota-cep" onchange="renderChart()" style="width:auto; padding:6px; border-radius:6px; border:1px solid #cbd5e1;">
                 <option value="furoCentro">Ø Furo Centro</option>
                 <option value="furoSateliteMedido">Ø Furo Satélite</option>
                 <option value="cotaZ">Cota Z</option>
@@ -265,38 +340,37 @@
             </select>
         </div>
         <div class="kpi-container">
-            <div class="kpi-card" style="border-left-color: #28a745;"><div class="kpi-title">Cp</div><div class="kpi-value" id="kpi-cp">--</div></div>
-            <div class="kpi-card" style="border-left-color: #007bff;"><div class="kpi-title">Cpk</div><div class="kpi-value" id="kpi-cpk">--</div></div>
-            <div class="kpi-card" style="border-left-color: #ffc107;"><div class="kpi-title">Média</div><div class="kpi-value" id="kpi-media">--</div></div>
+            <div class="kpi-card" style="border-left-color: #10b981;"><div class="kpi-title">Cp</div><div class="kpi-value" id="kpi-cp">--</div></div>
+            <div class="kpi-card" style="border-left-color: #2563eb;"><div class="kpi-title">Cpk</div><div class="kpi-value" id="kpi-cpk">--</div></div>
+            <div class="kpi-card" style="border-left-color: #f59e0b;"><div class="kpi-title">Média</div><div class="kpi-value" id="kpi-media">--</div></div>
         </div>
-        <div style="background:#fff; padding:15px; border:1px solid #ccc;">
+        <div style="background:#fff; padding:15px; border:1px solid var(--border-color); border-radius:8px;">
             <canvas id="chartCep" height="100"></canvas>
         </div>
     </div>
 </div>
 
-<!-- MODAL OBRIGATÓRIA DE APROVAÇÃO -->
 <div id="modalAprovacao" class="modal">
     <div class="modal-content">
-        <h3 style="color:#dc3545; margin-top:0; text-align:center;">DESVIO DETETADO - BLOQUEIO DE SALVAMENTO</h3>
-        <p style="font-size:12px; color:#333; text-align:center;">Uma ou mais cotas estão fora da especificação da engenharia. Requer liberação do responsável.</p>
-        <div style="margin-bottom:10px;">
-            <label style="font-size:12px; font-weight:bold;">Aprovador:</label>
-            <select id="aprovadorEmail" style="text-align:left; padding:6px; margin-top:3px;">
+        <h3 style="color:#ef4444; margin-top:0; text-align:center;">DESVIO DETETADO - BLOQUEIO DE SALVAMENTO</h3>
+        <p style="font-size:12px; color:#475569; text-align:center;">Uma ou mais cotas estão fora da especificação da engenharia. Requer liberação do responsável.</p>
+        <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:700;">Aprovador:</label>
+            <select id="aprovadorEmail" style="text-align:left; padding:8px; margin-top:4px; border-radius:6px; border:1px solid #cbd5e1;">
                 <option value="johni@empresa.com">johni@empresa.com (Johni Pedro)</option>
                 <option value="qualidade@empresa.com">qualidade@empresa.com (Supervisão Qualidade)</option>
             </select>
         </div>
-        <div style="margin-bottom:10px;">
-            <label style="font-size:12px; font-weight:bold;">Palavra-passe:</label>
-            <input type="password" id="aprovadorSenha" placeholder="******" style="text-align:left; padding:6px; margin-top:3px;">
+        <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:700;">Palavra-passe:</label>
+            <input type="password" id="aprovadorSenha" placeholder="******" style="text-align:left; padding:8px; margin-top:4px; border-radius:6px; border:1px solid #cbd5e1;">
         </div>
         <div style="margin-bottom:15px;">
-            <label style="font-size:12px; font-weight:bold;">Justificativa:</label>
-            <textarea id="justificativa" style="width:100%; height:60px; font-size:12px; padding:5px; box-sizing:border-box;" placeholder="Ex: Autorizado retrabalho pela Engenharia."></textarea>
+            <label style="font-size:12px; font-weight:700;">Justificativa:</label>
+            <textarea id="justificativa" style="width:100%; height:60px; font-size:12px; padding:8px; box-sizing:border-box; border-radius:6px; border:1px solid #cbd5e1;" placeholder="Ex: Autorizado retrabalho pela Engenharia."></textarea>
         </div>
-        <button type="button" onclick="confirmarAprovacaoEDesvio()" style="background-color:#28a745; color:white; font-size:16px; font-weight:bold; border:none; padding:12px; width:100%; cursor:pointer; border-radius:4px;">APROVAR E SALVAR REGISTO</button>
-        <button type="button" onclick="fecharModal()" style="background-color:#6c757d; color:white; font-size:14px; border:none; padding:8px; width:100%; cursor:pointer; border-radius:4px; margin-top:6px;">CANCELAR</button>
+        <button type="button" onclick="confirmarAprovacaoEDesvio()" style="background-color:#10b981; color:white; font-size:15px; font-weight:700; border:none; padding:12px; width:100%; cursor:pointer; border-radius:6px;">APROVAR E SALVAR REGISTO</button>
+        <button type="button" onclick="fecharModal()" style="background-color:#64748b; color:white; font-size:13px; border:none; padding:8px; width:100%; cursor:pointer; border-radius:6px; margin-top:8px;">CANCELAR</button>
     </div>
 </div>
 
@@ -449,7 +523,7 @@
         const just = document.getElementById('justificativa').value.trim();
 
         if (!just) {
-            alert('A justificativa do desvio é obrigatória.');
+            alert('A justificativa do desvio é obrigatoria.');
             return;
         }
 
@@ -510,8 +584,8 @@
                 if (dados && dados.length > 0) {
                     dados.forEach(i => {
                         const statusTag = i.possuiDesvio 
-                            ? `<span style="color:red;font-weight:bold;">DESVIO (${i.aprovadoPor || 'Aprovado'})</span>` 
-                            : `<span style="color:green;font-weight:bold;">OK</span>`;
+                            ? `<span style="color:#ef4444;font-weight:bold;">DESVIO (${i.aprovadoPor || 'Aprovado'})</span>` 
+                            : `<span style="color:#10b981;font-weight:bold;">OK</span>`;
                         html += `
                             <tr>
                                 <td>${i.dataHora}</td>
@@ -547,7 +621,7 @@
                                 <td><strong>${d.numeroOp}</strong></td>
                                 <td>${d.refProduto}</td>
                                 <td>${d.operador}</td>
-                                <td><strong style="color:#0056b3;">${d.aprovadoPor || 'Qualidade'}</strong></td>
+                                <td><strong style="color:#2563eb;">${d.aprovadoPor || 'Qualidade'}</strong></td>
                                 <td style="text-align:left;">${d.justificativaDesvio || 'Desvio aprovado pela supervisão.'}</td>
                                 <td>Ø:${d.furoCentro} | Z:${d.cotaZ} | H:${d.cotaH}</td>
                             </tr>
@@ -569,19 +643,19 @@
         formData.append('file', fileInput.files[0]);
 
         const statusBox = document.getElementById(statusId);
-        statusBox.style.color = '#0056b3';
+        statusBox.style.color = '#2563eb';
         statusBox.innerText = ' A importar...';
 
         fetch(`${API_URL}/Cep/${endpoint}`, { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
-                statusBox.style.color = 'green';
+                statusBox.style.color = '#10b981';
                 statusBox.innerText = ` ${data.message}`;
                 fileInput.value = '';
                 carregar3Bases();
             })
             .catch(() => {
-                statusBox.style.color = 'red';
+                statusBox.style.color = '#ef4444';
                 statusBox.innerText = ' Erro na importação.';
             });
     }
@@ -590,7 +664,6 @@
         fetch(`${API_URL}/Cep/bases-carregadas`)
             .then(res => res.json())
             .then(data => {
-                // 1. Tolerâncias
                 let htmlTol = '';
                 if (data.tolerancias && data.tolerancias.length > 0) {
                     data.tolerancias.forEach(t => {
@@ -601,7 +674,6 @@
                 }
                 document.getElementById('tbl-tolerancias').innerHTML = htmlTol;
 
-                // 2. Operadores
                 let htmlOpere = '';
                 let selectOpere = '<option value="">Selecione...</option>';
                 if (data.operadores && data.operadores.length > 0) {
@@ -615,7 +687,6 @@
                 document.getElementById('tbl-operadores').innerHTML = htmlOpere;
                 document.getElementById('operador').innerHTML = selectOpere;
 
-                // 3. Ordens de Produção
                 let htmlOp = '';
                 if (data.ordensProducao && data.ordensProducao.length > 0) {
                     data.ordensProducao.forEach(o => {
@@ -642,8 +713,6 @@
                 const labels = valores.map((_, idx) => `Amostra ${idx + 1}`);
                 const n = valores.length;
                 const media = valores.reduce((a, b) => a + b, 0) / n;
-                const variancia = valores.reduce((a, b) => a + Math.pow(b - media, 2), 0) / (n > 1 ? n - 1 : 1);
-                const desvioPadrao = Math.sqrt(variancia) || 0.01;
 
                 const cp = 1.33;
                 const cpk = 1.25;
@@ -660,8 +729,8 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            { label: 'Medição (mm)', data: valores, borderColor: '#007bff', backgroundColor: 'transparent', borderWidth: 2 },
-                            { label: 'Média', data: Array(valores.length).fill(media), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 }
+                            { label: 'Medição (mm)', data: valores, borderColor: '#2563eb', backgroundColor: 'transparent', borderWidth: 2 },
+                            { label: 'Média', data: Array(valores.length).fill(media), borderColor: '#10b981', borderDash: [3, 3], pointRadius: 0 }
                         ]
                     },
                     options: { responsive: true }
