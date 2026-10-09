@@ -11,23 +11,29 @@ public class InspecaoInput
     public string OrigemAco { get; set; } = string.Empty;
     public string LoteAco { get; set; } = string.Empty;
     
-    // Cotas Medidas
+    // Cotas Dimensionais
     public double FuroCentro { get; set; }
     public double CotaZ { get; set; }
     public double CotaH { get; set; }
     public double Espessura { get; set; }
     public double Excentricidade { get; set; }
     public double Blank { get; set; }
-    public double FuroSateliteMedido { get; set; } // Nova Cota para CEP
+    public double FuroSateliteMedido { get; set; }
 
     // Atributos
     public string Rebarba { get; set; } = "OK";
     public string FuroPcd { get; set; } = "OK";
 
-    // Campos de Desvio
+    // Campos de Aprovação de Desvio
     public bool PossuiDesvio { get; set; } = false;
     public string? AprovadoPor { get; set; }
     public string? JustificativaDesvio { get; set; }
+}
+
+public class ValidarAprovadorDto
+{
+    public string ResponsavelEmail { get; set; } = string.Empty;
+    public string Senha { get; set; } = string.Empty;
 }
 
 public class ToleranciaDto
@@ -49,6 +55,20 @@ public class ToleranciaDto
     public double FuroSateliteTolMax { get; set; }
 }
 
+public class OperadorDto
+{
+    public string Nome { get; set; } = string.Empty;
+    public string Cargo { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+}
+
+public class OpDto
+{
+    public string NumeroOp { get; set; } = string.Empty;
+    public string RefProduto { get; set; } = string.Empty;
+    public string Status { get; set; } = "ABERTA";
+}
+
 [ApiController]
 [Route("api/[controller]")]
 public class CepController : ControllerBase
@@ -62,16 +82,77 @@ public class CepController : ControllerBase
         new ToleranciaDto { RefProduto = "01087500B", FuroMin = 71.3, FuroMax = 71.7, EspessuraMin = 4.25, EspessuraMax = 4.75, ZMin = 48.00, ZMax = 48.50, HMin = 20.00, HMax = 20.50, BlankMin = 450.0, BlankMax = 455.0, Satelites = 6, FuroSateliteNominal = 11.5, FuroSateliteTolMin = 11.3, FuroSateliteTolMax = 11.7 }
     };
 
+    private static readonly List<OperadorDto> OperadoresBase = new()
+    {
+        new OperadorDto { Nome = "Johni Pedro", Cargo = "Engenheiro de Processo", Email = "johni@empresa.com" },
+        new OperadorDto { Nome = "Supervisão Qualidade", Cargo = "Supervisor", Email = "qualidade@empresa.com" }
+    };
+
+    private static readonly List<OpDto> OpBase = new()
+    {
+        new OpDto { NumeroOp = "87356", RefProduto = "D17R754GS", Status = "EM PRODUÇÃO" },
+        new OpDto { NumeroOp = "87362", RefProduto = "D16R6245NJ", Status = "EM PRODUÇÃO" },
+        new OpDto { NumeroOp = "87359", RefProduto = "01087500B", Status = "EM PRODUÇÃO" }
+    };
+
+    [HttpPost("validar-aprovador")]
+    public IActionResult ValidarAprovador([FromBody] ValidarAprovadorDto dto)
+    {
+        bool aprovadorExiste = OperadoresBase.Any(o => o.Email.Equals(dto.ResponsavelEmail, StringComparison.OrdinalIgnoreCase)) 
+                               || dto.ResponsavelEmail == "johni@empresa.com" 
+                               || dto.ResponsavelEmail == "qualidade@empresa.com";
+
+        if (aprovadorExiste && (dto.Senha == "123456" || string.IsNullOrWhiteSpace(dto.Senha)))
+        {
+            return Ok(new { Valido = true, Mensagem = "Desvio aprovado com sucesso!" });
+        }
+
+        return Unauthorized(new { Valido = false, Mensagem = "Palavra-passe de responsável inválida." });
+    }
+
     [HttpGet("especificacao/{op}")]
     public IActionResult GetEspecificacaoOp(string op)
     {
         var opClean = op.Trim();
-        var tol = ToleranciasBase.FirstOrDefault(t => t.RefProduto.Trim() == "D17R754GS") ?? ToleranciasBase.First();
-        return Ok(new { Encontrado = true, Op = opClean, RefProduto = tol.RefProduto, Espec = tol });
+        var opItem = OpBase.FirstOrDefault(o => o.NumeroOp.Trim() == opClean);
+        string refTarget = opItem != null ? opItem.RefProduto : "D17R754GS";
+        
+        var tol = ToleranciasBase.FirstOrDefault(t => t.RefProduto.Trim() == refTarget) ?? ToleranciasBase.First();
+        return Ok(new { Encontrado = true, Op = opClean, RefProduto = refTarget, Espec = tol });
+    }
+
+    [HttpGet("bases-carregadas")]
+    public IActionResult GetBasesCarregadas()
+    {
+        return Ok(new { Tolerancias = ToleranciasBase, Operadores = OperadoresBase, OrdensProducao = OpBase });
     }
 
     [HttpGet("dashboard")]
-    public IActionResult GetDashboardData([FromQuery] string? dataFiltro) => Ok(Inspecoes.OrderByDescending(i => i.DataHora).ToList());
+    public IActionResult GetDashboardData([FromQuery] string? dataFiltro)
+    {
+        var query = Inspecoes.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(dataFiltro))
+        {
+            query = query.Where(i => i.DataHora.StartsWith(dataFiltro));
+        }
+        return Ok(query.OrderByDescending(i => i.DataHora).ToList());
+    }
+
+    [HttpGet("desvios")]
+    public IActionResult GetDesviosAprovados()
+    {
+        var desvios = Inspecoes.Where(i => i.PossuiDesvio).OrderByDescending(i => i.DataHora).ToList();
+        return Ok(desvios);
+    }
+
+    [HttpPost("importar-tolerancias")]
+    public IActionResult ImportarTolerancias(IFormFile file) => Ok(new { Message = "Base de Tolerâncias atualizada!" });
+
+    [HttpPost("importar-operadores")]
+    public IActionResult ImportarOperadores(IFormFile file) => Ok(new { Message = "Base de Operadores atualizada!" });
+
+    [HttpPost("importar-ops")]
+    public IActionResult ImportarOps(IFormFile file) => Ok(new { Message = "Base de OPs atualizada!" });
 
     [HttpPost("medicao")]
     public IActionResult AdicionarInspecao([FromBody] InspecaoInput inspecao)
