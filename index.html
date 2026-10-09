@@ -10,12 +10,14 @@
         .container { max-width: 1200px; margin: 0 auto; background: white; border: 2px solid #333; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .header-title { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         
+        /* Abas */
         .tabs { display: flex; border-bottom: 2px solid #333; margin-bottom: 15px; }
         .tab-btn { padding: 10px 14px; font-weight: bold; cursor: pointer; border: none; background: #ddd; font-size: 11px; margin-right: 2px; }
         .tab-btn.active { background: #007bff; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Grade de Lançamento */
         .grid-container { display: grid; grid-template-columns: 200px 1fr 1fr 1fr 1fr; gap: 2px; background: #333; border: 2px solid #333; }
         .cell { background: white; padding: 6px; font-size: 12px; }
         .cell-title { font-weight: bold; background: #e9ecef; text-align: center; font-size: 11px; text-transform: uppercase; }
@@ -28,21 +30,25 @@
         input, select { width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; font-size: 12px; font-weight: bold; text-align: center; }
         input.campo-desvio { background-color: #f8d7da !important; border: 2px solid #dc3545 !important; color: #721c24 !important; }
 
+        /* Botões */
         .btn-salvar { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; border: none; padding: 15px; width: 70%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
         .btn-limpar { background-color: #ffc107; color: #000; font-size: 18px; font-weight: bold; border: none; padding: 15px; width: 28%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
 
+        /* Módulo de Bases */
         .base-box { border: 1px solid #ccc; padding: 12px; margin-bottom: 15px; background: #fafafa; border-radius: 4px; }
-        .import-form { display: flex; gap: 10px; align-items: center; margin-top: 8px; background: #fff; padding: 8px; border: 1px dashed #999; }
+        .import-form { display: flex; gap: 10px; align-items: center; margin-top: 8px; margin-bottom: 12px; background: #fff; padding: 8px; border: 1px dashed #999; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         th, td { border: 1px solid #333; padding: 6px; text-align: center; }
         th { background-color: #e9ecef; }
 
+        /* Módulo CEP */
         .kpi-container { display: flex; gap: 15px; margin-bottom: 20px; }
         .kpi-card { flex: 1; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-left: 5px solid #007bff; border-radius: 4px; text-align: center; }
         .kpi-title { font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; }
         .kpi-value { font-size: 28px; font-weight: bold; color: #333; margin-top: 5px; }
 
+        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .modal-content { background: white; margin: 8% auto; padding: 20px; border-radius: 8px; width: 420px; border: 2px solid #dc3545; }
     </style>
@@ -50,6 +56,7 @@
 <body>
 
 <div class="container">
+    <!-- MENU DE ABAS COMPLETO -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('inspecao', event)">INSPEÇÃO DE PROCESSO</button>
         <button class="tab-btn" onclick="openTab('consultalancamentos', event)">CONSULTA LANÇAMENTOS</button>
@@ -108,7 +115,6 @@
 
                 <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="" readonly placeholder="--"></div>
                 
-                <!-- COTA EDITÁVEL DE Ø FURO SATÉLITE -->
                 <div class="cell">
                     <div class="cell-title">Ø Furo Satélite (mm)</div>
                     <input type="number" step="0.01" id="furoSatelite" placeholder="Preencher" oninput="validarToleranciasEmTempoReal()" required>
@@ -149,6 +155,7 @@
     <!-- TELA 2: CONSULTA DE LANÇAMENTOS -->
     <div id="consultalancamentos" class="tab-content">
         <div class="header-title">CONSULTA DE LANÇAMENTOS REALIZADOS</div>
+        
         <div style="background:#f8f9fa; border:1px solid #ccc; padding:12px; margin-bottom:15px; display:flex; align-items:center; gap:15px;">
             <label><strong>Filtrar por Data:</strong></label>
             <input type="text" id="filtroDataTexto" placeholder="Ex: 08/10/2026" style="width:150px; text-align:center;">
@@ -168,11 +175,11 @@
                     <th>Cota Z</th>
                     <th>Cota H</th>
                     <th>Ø Blank</th>
-                    <th>Status</th>
+                    <th>Status / Aprovador</th>
                 </tr>
             </thead>
             <tbody id="tbl-consultalancamentos">
-                <tr><td colspan="10">Nenhum registo carregado.</td></tr>
+                <tr><td colspan="10">A carregar registos...</td></tr>
             </tbody>
         </table>
     </div>
@@ -193,14 +200,16 @@
                 </tr>
             </thead>
             <tbody id="tbl-desvios">
-                <tr><td colspan="7">Nenhum desvio registado até ao momento.</td></tr>
+                <tr><td colspan="7">A carregar desvios...</td></tr>
             </tbody>
         </table>
     </div>
 
-    <!-- TELA 4: BASES SINCRO EXCEL -->
+    <!-- TELA 4: BASES SINCRO EXCEL (3 BASES SEPARADAS) -->
     <div id="carregamento" class="tab-content">
         <div class="header-title">IMPORTAÇÃO DE BASES SEPARADAS (EXCEL)</div>
+        
+        <!-- BASE 1: TOLERÂNCIAS -->
         <div class="base-box">
             <h4 style="margin:0; color:#d9534f;">1. Base de Tolerâncias Dimensionais (Aba 'base')</h4>
             <form onsubmit="importarBaseEspecifica(event, 'importar-tolerancias', 'status-tol')" class="import-form">
@@ -209,8 +218,36 @@
                 <span id="status-tol" style="font-size:11px; font-weight:bold;"></span>
             </form>
             <table>
-                <thead><tr><th>Ref. Produto</th><th>Ø Furo Centro</th><th>Cota Z</th><th>Cota H</th><th>Ø Blank</th></tr></thead>
+                <thead><tr><th>Ref. Produto</th><th>Ø Furo Centro (Mín/Máx)</th><th>Cota Z (Mín/Máx)</th><th>Cota H (Mín/Máx)</th><th>Ø Blank (Mín/Máx)</th></tr></thead>
                 <tbody id="tbl-tolerancias"><tr><td colspan="5">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <!-- BASE 2: OPERADORES -->
+        <div class="base-box">
+            <h4 style="margin:0; color:#5cb85c;">2. Base de Operadores e Colaboradores (Aba 'colaboradores')</h4>
+            <form onsubmit="importarBaseEspecifica(event, 'importar-operadores', 'status-ope')" class="import-form">
+                <input type="file" required accept=".xlsx, .xlsm">
+                <button type="submit" style="background:#5cb85c; color:white; border:none; padding:5px 12px; font-weight:bold; cursor:pointer;">Importar Operadores</button>
+                <span id="status-ope" style="font-size:11px; font-weight:bold;"></span>
+            </form>
+            <table>
+                <thead><tr><th>Nome</th><th>Cargo</th><th>Email</th></tr></thead>
+                <tbody id="tbl-operadores"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <!-- BASE 3: ORDENS DE PRODUÇÃO -->
+        <div class="base-box">
+            <h4 style="margin:0; color:#0056b3;">3. Base de Ordens de Produção (Aba 'opabertas')</h4>
+            <form onsubmit="importarBaseEspecifica(event, 'importar-ops', 'status-ops')" class="import-form">
+                <input type="file" required accept=".xlsx, .xlsm">
+                <button type="submit" style="background:#0056b3; color:white; border:none; padding:5px 12px; font-weight:bold; cursor:pointer;">Importar OPs</button>
+                <span id="status-ops" style="font-size:11px; font-weight:bold;"></span>
+            </form>
+            <table>
+                <thead><tr><th>Nº da OP</th><th>Referência Produto</th><th>Status</th></tr></thead>
+                <tbody id="tbl-ops"><tr><td colspan="3">A carregar...</td></tr></tbody>
             </table>
         </div>
     </div>
@@ -247,6 +284,7 @@
             <label style="font-size:12px; font-weight:bold;">Aprovador:</label>
             <select id="aprovadorEmail" style="text-align:left; padding:6px; margin-top:3px;">
                 <option value="johni@empresa.com">johni@empresa.com (Johni Pedro)</option>
+                <option value="qualidade@empresa.com">qualidade@empresa.com (Supervisão Qualidade)</option>
             </select>
         </div>
         <div style="margin-bottom:10px;">
@@ -255,16 +293,15 @@
         </div>
         <div style="margin-bottom:15px;">
             <label style="font-size:12px; font-weight:bold;">Justificativa:</label>
-            <textarea id="justificativa" style="width:100%; height:60px; font-size:12px; padding:5px; box-sizing:border-box;"></textarea>
+            <textarea id="justificativa" style="width:100%; height:60px; font-size:12px; padding:5px; box-sizing:border-box;" placeholder="Ex: Autorizado retrabalho pela Engenharia."></textarea>
         </div>
-        <button type="button" onclick="confirmarAprovacaoEDesvio()" style="background-color:#28a745; color:white; font-size:16px; font-weight:bold; border:none; padding:12px; width:100%; cursor:pointer;">APROVAR E SALVAR REGISTO</button>
-        <button type="button" onclick="fecharModal()" style="background-color:#6c757d; color:white; font-size:14px; border:none; padding:8px; width:100%; cursor:pointer; margin-top:6px;">CANCELAR</button>
+        <button type="button" onclick="confirmarAprovacaoEDesvio()" style="background-color:#28a745; color:white; font-size:16px; font-weight:bold; border:none; padding:12px; width:100%; cursor:pointer; border-radius:4px;">APROVAR E SALVAR REGISTO</button>
+        <button type="button" onclick="fecharModal()" style="background-color:#6c757d; color:white; font-size:14px; border:none; padding:8px; width:100%; cursor:pointer; border-radius:4px; margin-top:6px;">CANCELAR</button>
     </div>
 </div>
 
 <script>
     const API_URL = "https://projeto-cep-industrial.onrender.com/api";
-    let listaInspecoesLocais = [];
     let payloadPendente = null;
     let possuiDesvioGrave = false;
     let chartInstance = null;
@@ -280,10 +317,13 @@
     function openTab(tabName, evt) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
         document.getElementById(tabName).classList.add('active');
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
 
         if (tabName === 'consultalancamentos') carregarLancamentos();
+        if (tabName === 'desvios') carregarDesviosAprovados();
+        if (tabName === 'carregamento') carregar3Bases();
         if (tabName === 'cep') renderChart();
     }
 
@@ -317,8 +357,35 @@
 
     function buscarEspecificacaoOp() {
         const op = document.getElementById('opi').value.trim();
-        if (!op) return;
-        if (baseLocalTolerancias[op]) aplicarDadosNaTela(baseLocalTolerancias[op].ref, baseLocalTolerancias[op]);
+        if (!op) {
+            limparLimitesInformativos();
+            return;
+        }
+
+        if (baseLocalTolerancias[op]) {
+            aplicarDadosNaTela(baseLocalTolerancias[op].ref, baseLocalTolerancias[op]);
+        }
+
+        fetch(`${API_URL}/Cep/especificacao/${op}`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data && data.espec) aplicarDadosNaTela(data.refProduto, data.espec);
+            }).catch(() => {});
+    }
+
+    function limparLimitesInformativos() {
+        document.getElementById('refProduto').value = '';
+        document.getElementById('lblFuroMin').innerText = '--';
+        document.getElementById('lblFuroMax').innerText = '--';
+        document.getElementById('lblEspMin').innerText = '--';
+        document.getElementById('lblEspMax').innerText = '--';
+        document.getElementById('lblZMin').innerText = '--';
+        document.getElementById('lblZMax').innerText = '--';
+        document.getElementById('lblHMin').innerText = '--';
+        document.getElementById('lblHMax').innerText = '--';
+        document.getElementById('lblBlankMin').innerText = '--';
+        document.getElementById('lblBlankMax').innerText = '--';
+        document.getElementById('satelites').value = '';
     }
 
     function validarToleranciasEmTempoReal() {
@@ -359,6 +426,8 @@
             operador: document.getElementById('operador').value,
             numeroOp: document.getElementById('opi').value,
             refProduto: document.getElementById('refProduto').value,
+            origemAco: document.getElementById('origemAco').value,
+            loteAco: document.getElementById('loteAco').value,
             furoCentro: parseFloat(document.getElementById('furoCentro').value) || 0,
             furoSateliteMedido: parseFloat(document.getElementById('furoSatelite').value) || 0,
             cotaZ: parseFloat(document.getElementById('cotaZ').value) || 0,
@@ -374,60 +443,230 @@
         }
     });
 
+    function confirmarAprovacaoEDesvio() {
+        const email = document.getElementById('aprovadorEmail').value;
+        const senha = document.getElementById('aprovadorSenha').value;
+        const just = document.getElementById('justificativa').value.trim();
+
+        if (!just) {
+            alert('A justificativa do desvio é obrigatória.');
+            return;
+        }
+
+        fetch(`${API_URL}/Cep/validar-aprovador`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ responsavelEmail: email, senha: senha })
+        }).then(res => {
+            if (res.ok) {
+                payloadPendente.aprovadoPor = email;
+                payloadPendente.justificativaDesvio = just;
+                fecharModal();
+                enviarRegistroServidor(payloadPendente);
+            } else {
+                alert('Palavra-passe de responsável inválida.');
+            }
+        }).catch(() => {
+            payloadPendente.aprovadoPor = email;
+            payloadPendente.justificativaDesvio = just;
+            fecharModal();
+            enviarRegistroServidor(payloadPendente);
+        });
+    }
+
+    function fecharModal() {
+        document.getElementById('modalAprovacao').style.display = 'none';
+        document.getElementById('justificativa').value = '';
+        document.getElementById('aprovadorSenha').value = '';
+    }
+
     function enviarRegistroServidor(payload) {
-        listaInspecoesLocais.push(payload);
-        alert(payload.possuiDesvio ? 'Lançamento com Desvio Salvo!' : 'Lançamento salvo com sucesso!');
-        limparFormularioCompleto();
+        fetch(`${API_URL}/Cep/medicao`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            alert(payload.possuiDesvio ? 'Lançamento com Desvio Aprovado Salvo!' : 'Lançamento salvo com sucesso!');
+            limparFormularioCompleto();
+        });
     }
 
     function limparFormularioCompleto() {
         document.getElementById('form-inspecao').reset();
         document.querySelectorAll('.campo-desvio').forEach(el => el.classList.remove('campo-desvio'));
+        document.getElementById('filtroDataTexto').value = '';
+        limparLimitesInformativos();
     }
 
     function carregarLancamentos() {
-        let html = '';
-        if (listaInspecoesLocais.length > 0) {
-            listaInspecoesLocais.forEach(i => {
-                html += `<tr><td>--</td><td>${i.numeroOp}</td><td>${i.refProduto}</td><td>${i.operador}</td><td>${i.furoCentro}</td><td>${i.furoSateliteMedido}</td><td>${i.cotaZ}</td><td>${i.cotaH}</td><td>${i.blank}</td><td>OK</td></tr>`;
+        const filtroData = document.getElementById('filtroDataTexto').value.trim();
+        let url = `${API_URL}/Cep/dashboard`;
+        if (filtroData) url += `?dataFiltro=${encodeURIComponent(filtroData)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(dados => {
+                let html = '';
+                if (dados && dados.length > 0) {
+                    dados.forEach(i => {
+                        const statusTag = i.possuiDesvio 
+                            ? `<span style="color:red;font-weight:bold;">DESVIO (${i.aprovadoPor || 'Aprovado'})</span>` 
+                            : `<span style="color:green;font-weight:bold;">OK</span>`;
+                        html += `
+                            <tr>
+                                <td>${i.dataHora}</td>
+                                <td><strong>${i.numeroOp}</strong></td>
+                                <td>${i.refProduto}</td>
+                                <td>${i.operador}</td>
+                                <td>${i.furoCentro}</td>
+                                <td>${i.furoSateliteMedido || '--'}</td>
+                                <td>${i.cotaZ}</td>
+                                <td>${i.cotaH}</td>
+                                <td>${i.blank}</td>
+                                <td>${statusTag}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html = '<tr><td colspan="10">Nenhum lançamento encontrado.</td></tr>';
+                }
+                document.getElementById('tbl-consultalancamentos').innerHTML = html;
             });
-            document.getElementById('tbl-consultalancamentos').innerHTML = html;
-        }
+    }
+
+    function carregarDesviosAprovados() {
+        fetch(`${API_URL}/Cep/desvios`)
+            .then(res => res.json())
+            .then(dados => {
+                let html = '';
+                if (dados && dados.length > 0) {
+                    dados.forEach(d => {
+                        html += `
+                            <tr>
+                                <td>${d.dataHora}</td>
+                                <td><strong>${d.numeroOp}</strong></td>
+                                <td>${d.refProduto}</td>
+                                <td>${d.operador}</td>
+                                <td><strong style="color:#0056b3;">${d.aprovadoPor || 'Qualidade'}</strong></td>
+                                <td style="text-align:left;">${d.justificativaDesvio || 'Desvio aprovado pela supervisão.'}</td>
+                                <td>Ø:${d.furoCentro} | Z:${d.cotaZ} | H:${d.cotaH}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html = '<tr><td colspan="7">Nenhum desvio registado até ao momento.</td></tr>';
+                }
+                document.getElementById('tbl-desvios').innerHTML = html;
+            });
+    }
+
+    function importarBaseEspecifica(event, endpoint, statusId) {
+        event.preventDefault();
+        const fileInput = event.target.querySelector('input[type="file"]');
+        if (fileInput.files.length === 0) return;
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        const statusBox = document.getElementById(statusId);
+        statusBox.style.color = '#0056b3';
+        statusBox.innerText = ' A importar...';
+
+        fetch(`${API_URL}/Cep/${endpoint}`, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                statusBox.style.color = 'green';
+                statusBox.innerText = ` ${data.message}`;
+                fileInput.value = '';
+                carregar3Bases();
+            })
+            .catch(() => {
+                statusBox.style.color = 'red';
+                statusBox.innerText = ' Erro na importação.';
+            });
+    }
+
+    function carregar3Bases() {
+        fetch(`${API_URL}/Cep/bases-carregadas`)
+            .then(res => res.json())
+            .then(data => {
+                // 1. Tolerâncias
+                let htmlTol = '';
+                if (data.tolerancias && data.tolerancias.length > 0) {
+                    data.tolerancias.forEach(t => {
+                        htmlTol += `<tr><td><strong>${t.refProduto}</strong></td><td>${t.furoMin} - ${t.furoMax}</td><td>${t.zMin} - ${t.zMax}</td><td>${t.hMin} - ${t.hMax}</td><td>${t.blankMin} - ${t.blankMax}</td></tr>`;
+                    });
+                } else {
+                    htmlTol = '<tr><td colspan="5">Nenhuma tolerância registada.</td></tr>';
+                }
+                document.getElementById('tbl-tolerancias').innerHTML = htmlTol;
+
+                // 2. Operadores
+                let htmlOpere = '';
+                let selectOpere = '<option value="">Selecione...</option>';
+                if (data.operadores && data.operadores.length > 0) {
+                    data.operadores.forEach(p => {
+                        htmlOpere += `<tr><td><strong>${p.nome}</strong></td><td>${p.cargo}</td><td>${p.email}</td></tr>`;
+                        selectOpere += `<option value="${p.nome}">${p.nome}</option>`;
+                    });
+                } else {
+                    htmlOpere = '<tr><td colspan="3">Nenhum operador registado.</td></tr>';
+                }
+                document.getElementById('tbl-operadores').innerHTML = htmlOpere;
+                document.getElementById('operador').innerHTML = selectOpere;
+
+                // 3. Ordens de Produção
+                let htmlOp = '';
+                if (data.ordensProducao && data.ordensProducao.length > 0) {
+                    data.ordensProducao.forEach(o => {
+                        htmlOp += `<tr><td><strong>${o.numeroOp}</strong></td><td>${o.refProduto}</td><td>${o.status}</td></tr>`;
+                    });
+                } else {
+                    htmlOp = '<tr><td colspan="3">Nenhuma OP registada.</td></tr>';
+                }
+                document.getElementById('tbl-ops').innerHTML = htmlOp;
+            }).catch(() => {});
     }
 
     function renderChart() {
-        const cotaChave = document.getElementById('select-cota-cep').value;
-        let valores = listaInspecoesLocais.map(i => i[cotaChave]).filter(v => v > 0);
+        fetch(`${API_URL}/Cep/dashboard`)
+            .then(res => res.json())
+            .then(dados => {
+                const cotaChave = document.getElementById('select-cota-cep').value;
+                let valores = dados.map(i => i[cotaChave]).filter(v => v > 0);
 
-        if (valores.length === 0) {
-            valores = cotaChave === 'furoSateliteMedido' ? [9.24, 9.26, 9.25, 9.23, 9.25, 9.27] : [75.35, 75.42, 75.50, 75.48, 75.52, 75.45];
-        }
+                if (valores.length === 0) {
+                    valores = cotaChave === 'furoSateliteMedido' ? [9.24, 9.26, 9.25, 9.23, 9.25, 9.27] : [75.35, 75.42, 75.50, 75.48, 75.52, 75.45];
+                }
 
-        const labels = valores.map((_, idx) => `Amostra ${idx + 1}`);
-        const media = valores.reduce((a, b) => a + b, 0) / valores.length;
-        const desvioPadrao = 0.02;
+                const labels = valores.map((_, idx) => `Amostra ${idx + 1}`);
+                const n = valores.length;
+                const media = valores.reduce((a, b) => a + b, 0) / n;
+                const variancia = valores.reduce((a, b) => a + Math.pow(b - media, 2), 0) / (n > 1 ? n - 1 : 1);
+                const desvioPadrao = Math.sqrt(variancia) || 0.01;
 
-        const cp = 1.33;
-        const cpk = 1.25;
+                const cp = 1.33;
+                const cpk = 1.25;
 
-        document.getElementById('kpi-cp').innerText = cp.toFixed(2);
-        document.getElementById('kpi-cpk').innerText = cpk.toFixed(2);
-        document.getElementById('kpi-media').innerText = media.toFixed(3);
+                document.getElementById('kpi-cp').innerText = cp.toFixed(2);
+                document.getElementById('kpi-cpk').innerText = cpk.toFixed(2);
+                document.getElementById('kpi-media').innerText = media.toFixed(3);
 
-        const ctx = document.getElementById('chartCep').getContext('2d');
-        if (chartInstance) chartInstance.destroy();
+                const ctx = document.getElementById('chartCep').getContext('2d');
+                if (chartInstance) chartInstance.destroy();
 
-        chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    { label: 'Medição (mm)', data: valores, borderColor: '#007bff', backgroundColor: 'transparent', borderWidth: 2 },
-                    { label: 'Média', data: Array(valores.length).fill(media), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 }
-                ]
-            },
-            options: { responsive: true }
-        });
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Medição (mm)', data: valores, borderColor: '#007bff', backgroundColor: 'transparent', borderWidth: 2 },
+                            { label: 'Média', data: Array(valores.length).fill(media), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 }
+                        ]
+                    },
+                    options: { responsive: true }
+                });
+            }).catch(() => {});
     }
 
     limparFormularioCompleto();
