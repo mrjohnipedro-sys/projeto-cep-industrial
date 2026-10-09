@@ -2,47 +2,46 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProcessControl.API.Controllers;
 
-public class MedicaoInput
+public class InspecaoInput
 {
-    public string Equipamento { get; set; } = string.Empty;
-    public string Lote { get; set; } = string.Empty;
-    public double Valor { get; set; }
+    public string DataHora { get; set; } = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+    public string Operador { get; set; } = string.Empty;
+    public string NumeroOpi { get; set; } = string.Empty;
+    public string RefProduto { get; set; } = string.Empty;
+    public string OrigemAco { get; set; } = string.Empty;
+    public string LoteAco { get; set; } = string.Empty;
+    
+    // Cotas e Parâmetros Dimensional
+    public double FuroCentro { get; set; }
+    public double CotaZ { get; set; }
+    public string Rebarba { get; set; } = "OK";
+    public double FuroPcd { get; set; }
+    public double Espessura { get; set; }
+    public double CotaH { get; set; }
 }
 
 [ApiController]
 [Route("api/[controller]")]
 public class CepController : ControllerBase
 {
-    private static readonly List<MedicaoInput> Medicoes = new();
+    private static readonly List<InspecaoInput> Inspecoes = new();
 
     [HttpGet("dashboard")]
     public IActionResult GetDashboardData()
     {
-        var total = Medicoes.Count;
-        var media = total > 0 ? Medicoes.Average(m => m.Valor) : 25.0012;
-
-        var data = new
-        {
-            Equipamento = Medicoes.LastOrDefault()?.Equipamento ?? "CNC-01",
-            Lote = Medicoes.LastOrDefault()?.Lote ?? "LOT-202610-A",
-            MediaGeral = Math.Round(media, 4),
-            Cp = 1.33,
-            Cpk = 1.25,
-            Status = "Sob Controlo Estatístico",
-            TotalAmostras = total > 0 ? total : 10,
-            UltimasMedicoes = Medicoes.TakeLast(5).ToList()
-        };
-
-        return Ok(data);
+        return Ok(Inspecoes.OrderByDescending(i => i.DataHora).ToList());
     }
 
     [HttpPost("medicao")]
-    public IActionResult AdicionarMedicao([FromBody] MedicaoInput medicao)
+    public IActionResult AdicionarInspecao([FromBody] InspecaoInput inspecao)
     {
-        if (medicao.Valor <= 0)
-            return BadRequest(new { Message = "O valor da medição deve ser maior que zero." });
+        if (string.IsNullOrWhiteSpace(inspecao.Operador) || string.IsNullOrWhiteSpace(inspecao.NumeroOpi))
+        {
+            return BadRequest(new { Message = "Por favor, preencha todos os campos antes de enviar o registo." });
+        }
 
-        Medicoes.Add(medicao);
-        return Ok(new { Message = "Medição registada com sucesso!", Total = Medicoes.Count });
+        inspecao.DataHora = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+        Inspecoes.Add(inspecao);
+        return Ok(new { Message = "Inspeção de Processo salva com sucesso!" });
     }
 }
