@@ -50,13 +50,13 @@
 <body>
 
 <div class="container">
-    <!-- MENU DE ABAS COMPLETO -->
+    <!-- MENU DE ABAS COM EVENTO DE CLIQUE CORRIGIDO -->
     <div class="tabs">
-        <button class="tab-btn active" onclick="openTab('inspecao')">INSPEÇÃO DE PROCESSO</button>
-        <button class="tab-btn" onclick="openTab('consultalancamentos')">CONSULTA LANÇAMENTOS</button>
-        <button class="tab-btn" onclick="openTab('desvios')">DESVIOS APROVADOS</button>
-        <button class="tab-btn" onclick="openTab('carregamento')">BASES SINCRO (EXCEL)</button>
-        <button class="tab-btn" onclick="openTab('cep')">CONSULTA CEP (Cp / Cpk)</button>
+        <button class="tab-btn active" onclick="openTab('inspecao', event)">INSPEÇÃO DE PROCESSO</button>
+        <button class="tab-btn" onclick="openTab('consultalancamentos', event)">CONSULTA LANÇAMENTOS</button>
+        <button class="tab-btn" onclick="openTab('desvios', event)">DESVIOS APROVADOS</button>
+        <button class="tab-btn" onclick="openTab('carregamento', event)">BASES SINCRO (EXCEL)</button>
+        <button class="tab-btn" onclick="openTab('cep', event)">CONSULTA CEP (Cp / Cpk)</button>
     </div>
 
     <!-- TELA 1: LANÇAMENTO DE INSPEÇÃO -->
@@ -80,25 +80,25 @@
 
                 <div class="cell">
                     <div class="cell-title">Número da OP</div>
-                    <input type="text" id="opi" value="87356" oninput="buscarEspecificacaoOp()" onkeyup="buscarEspecificacaoOp()" required>
+                    <input type="text" id="opi" value="" placeholder="Digite a OP" oninput="buscarEspecificacaoOp()" onkeyup="buscarEspecificacaoOp()" required>
                 </div>
                 <div class="cell">
                     <div class="cell-title">Referência Produto</div>
-                    <input type="text" id="refProduto" value="D17R754GS" readonly style="background:#e9ecef;">
+                    <input type="text" id="refProduto" value="" placeholder="Aguardando OP..." readonly style="background:#e9ecef;">
                 </div>
                 <div class="cell cell-red">Ø FURO CENTRO</div>
                 <div class="cell cell-red">COTA Z (mm)</div>
 
-                <div class="cell"><div class="cell-title">Operador</div><select id="operador"><option value="Johni Pedro">Johni Pedro</option></select></div>
+                <div class="cell"><div class="cell-title">Operador</div><select id="operador"><option value="">Selecione...</option><option value="Johni Pedro">Johni Pedro</option></select></div>
                 <div class="cell"><div class="cell-title">Nº Origem do Aço</div><input type="text" id="origemAco"></div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblFuroMin">75,3</div><div class="lim-val" id="lblFuroMax">75,7</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblFuroMin">--</div><div class="lim-val" id="lblFuroMax">--</div></div>
                     <input type="number" step="0.01" id="furoCentro" oninput="validarToleranciasEmTempoReal()" required>
                 </div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblZMin">48,0</div><div class="lim-val" id="lblZMax">48,5</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblZMin">--</div><div class="lim-val" id="lblZMax">--</div></div>
                     <input type="number" step="0.01" id="cotaZ" oninput="validarToleranciasEmTempoReal()" required>
                 </div>
 
@@ -107,16 +107,16 @@
                 <div class="cell cell-green">ESPESSURA</div>
                 <div class="cell cell-red">COTA H (mm)</div>
 
-                <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="6" readonly></div>
-                <div class="cell"><div class="cell-title">Ø Furo Satélite (mm)</div><input type="text" id="furoSatelite" value="9,25" readonly></div>
+                <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="" readonly placeholder="--"></div>
+                <div class="cell"><div class="cell-title">Ø Furo Satélite (mm)</div><input type="text" id="furoSatelite" value="" readonly placeholder="--"></div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblEspMin">3,75</div><div class="lim-val" id="lblEspMax">4,25</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblEspMin">--</div><div class="lim-val" id="lblEspMax">--</div></div>
                     <input type="number" step="0.01" id="espessura" oninput="validarToleranciasEmTempoReal()">
                 </div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblHMin">14,875</div><div class="lim-val" id="lblHMax">15,375</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblHMin">--</div><div class="lim-val" id="lblHMax">--</div></div>
                     <input type="number" step="0.01" id="cotaH" oninput="validarToleranciasEmTempoReal()" required>
                 </div>
 
@@ -129,14 +129,14 @@
                 </div>
                 <div class="cell cell-red">
                     <div>Ø BLANK (mm)</div>
-                    <div class="sub-grid"><div class="lim-val" id="lblBlankMin">431,3</div><div class="lim-val" id="lblBlankMax">432,3</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblBlankMin">--</div><div class="lim-val" id="lblBlankMax">--</div></div>
                     <input type="number" step="0.1" id="blank" oninput="validarToleranciasEmTempoReal()">
                 </div>
             </div>
 
             <div style="text-align: center;">
                 <button type="submit" class="btn-salvar">SALVAR</button>
-                <button type="button" class="btn-limpar" onclick="limparFormulario()">LIMPAR</button>
+                <button type="button" class="btn-limpar" onclick="limparFormularioCompleto()">LIMPAR</button>
             </div>
         </form>
     </div>
@@ -167,7 +167,7 @@
                 </tr>
             </thead>
             <tbody id="tbl-consultalancamentos">
-                <tr><td colspan="9">A carregar registos...</td></tr>
+                <tr><td colspan="9">Nenhum registo carregado.</td></tr>
             </tbody>
         </table>
     </div>
@@ -188,7 +188,7 @@
                 </tr>
             </thead>
             <tbody id="tbl-desvios">
-                <tr><td colspan="7">A carregar desvios...</td></tr>
+                <tr><td colspan="7">Nenhum desvio registado até ao momento.</td></tr>
             </tbody>
         </table>
     </div>
@@ -224,4 +224,413 @@
         </div>
 
         <div class="base-box">
-            <h4 style="margin:0; color:#0056b3;">3. Base de Ordens de Produção (
+            <h4 style="margin:0; color:#0056b3;">3. Base de Ordens de Produção (Aba 'opabertas')</h4>
+            <form onsubmit="importarBaseEspecifica(event, 'importar-ops', 'status-ops')" class="import-form">
+                <input type="file" required accept=".xlsx, .xlsm">
+                <button type="submit" style="background:#0056b3; color:white; border:none; padding:5px 12px; font-weight:bold; cursor:pointer;">Importar OPs</button>
+                <span id="status-ops" style="font-size:11px; font-weight:bold;"></span>
+            </form>
+            <table>
+                <thead><tr><th>Nº da OP</th><th>Referência Produto</th><th>Status</th></tr></thead>
+                <tbody id="tbl-ops"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TELA 5: CONSULTA CEP -->
+    <div id="cep" class="tab-content">
+        <div class="header-title">ANÁLISE DE CAPACIDADE DO PROCESSO (CEP)</div>
+        <div style="margin-bottom:15px; text-align:center;">
+            <label><strong>Selecione a Cota para Análise:</strong></label>
+            <select id="select-cota-cep" onchange="renderChart()" style="width:auto; padding:5px;">
+                <option value="furoCentro">Ø Furo Centro</option>
+                <option value="cotaZ">Cota Z</option>
+                <option value="cotaH">Cota H</option>
+            </select>
+        </div>
+        <div class="kpi-container">
+            <div class="kpi-card" style="border-left-color: #28a745;"><div class="kpi-title">Cp</div><div class="kpi-value" id="kpi-cp">--</div></div>
+            <div class="kpi-card" style="border-left-color: #007bff;"><div class="kpi-title">Cpk</div><div class="kpi-value" id="kpi-cpk">--</div></div>
+            <div class="kpi-card" style="border-left-color: #ffc107;"><div class="kpi-title">Média</div><div class="kpi-value" id="kpi-media">--</div></div>
+        </div>
+        <div style="background:#fff; padding:15px; border:1px solid #ccc;">
+            <canvas id="chartCep" height="100"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL OBRIGATÓRIA DE APROVAÇÃO DE DESVIO -->
+<div id="modalAprovacao" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#dc3545; margin-top:0; text-align:center;">DESVIO DETETADO - BLOQUEIO DE SALVAMENTO</h3>
+        <p style="font-size:12px; color:#333; text-align:center;">Uma ou mais cotas estão fora da especificação da engenharia. É necessária a liberação de um responsável autorizado.</p>
+        
+        <div style="margin-bottom:10px;">
+            <label style="font-size:12px; font-weight:bold;">Aprovador (Responsável/Engenharia):</label>
+            <select id="aprovadorEmail" style="text-align:left; padding:6px; margin-top:3px;">
+                <option value="johni@empresa.com">johni@empresa.com (Johni Pedro)</option>
+                <option value="qualidade@empresa.com">qualidade@empresa.com (Supervisão Qualidade)</option>
+            </select>
+        </div>
+        
+        <div style="margin-bottom:10px;">
+            <label style="font-size:12px; font-weight:bold;">Palavra-passe de Acesso:</label>
+            <input type="password" id="aprovadorSenha" placeholder="******" style="text-align:left; padding:6px; margin-top:3px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label style="font-size:12px; font-weight:bold;">Justificativa do Desvio (Obrigatória):</label>
+            <textarea id="justificativa" style="width:100%; height:60px; font-size:12px; padding:5px; box-sizing:border-box;" placeholder="Ex: Autorizado retrabalho/ajuste pela Engenharia de Processos."></textarea>
+        </div>
+
+        <button type="button" onclick="confirmarAprovacaoEDesvio()" style="background-color:#28a745; color:white; font-size:16px; font-weight:bold; border:none; padding:12px; width:100%; cursor:pointer; border-radius:4px;">APROVAR E SALVAR REGISTO</button>
+        <button type="button" onclick="fecharModal()" style="background-color:#6c757d; color:white; font-size:14px; border:none; padding:8px; width:100%; cursor:pointer; border-radius:4px; margin-top:6px;">CANCELAR</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://projeto-cep-industrial.onrender.com/api";
+    let payloadPendente = null;
+    let possuiDesvioGrave = false;
+    let chartInstance = null;
+
+    let especAtual = { furoMin: 0, furoMax: 0, espMin: 0, espMax: 0, zMin: 0, zMax: 0, hMin: 0, hMax: 0, blankMin: 0, blankMax: 0, excMax: 0.5 };
+
+    const baseLocalTolerancias = {
+        "87356": { ref: "D17R754GS", furoMin: 75.3, furoMax: 75.7, espMin: 3.75, espMax: 4.25, zMin: 48.0, zMax: 48.5, hMin: 14.875, hMax: 15.375, blankMin: 431.3, blankMax: 432.3, satelites: 6, furoSatelite: 9.25 },
+        "87362": { ref: "D16R6245NJ", furoMin: 62.0, furoMax: 62.4, espMin: 4.25, espMax: 4.75, zMin: 34.25, zMax: 34.75, hMin: 8.90, hMax: 9.40, blankMin: 406.4, blankMax: 407.4, satelites: 6, furoSatelite: 11.5 },
+        "87359": { ref: "01087500B", furoMin: 71.3, furoMax: 71.7, espMin: 4.25, espMax: 4.75, zMin: 48.00, zMax: 48.50, hMin: 20.00, hMax: 20.50, blankMin: 450.0, blankMax: 455.0, satelites: 6, furoSatelite: 11.5 }
+    };
+
+    // Navegação de abas corrigida para responder em qualquer elemento
+    function openTab(tabName, evt) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabName).classList.add('active');
+        if (evt && evt.currentTarget) {
+            evt.currentTarget.classList.add('active');
+        }
+
+        if (tabName === 'consultalancamentos') carregarLancamentos();
+        if (tabName === 'desvios') carregarDesviosAprovados();
+        if (tabName === 'carregamento') carregar3Bases();
+        if (tabName === 'cep') renderChart();
+    }
+
+    function aplicarDadosNaTela(ref, espec) {
+        document.getElementById('refProduto').value = ref;
+        document.getElementById('lblFuroMin').innerText = espec.furoMin;
+        document.getElementById('lblFuroMax').innerText = espec.furoMax;
+        document.getElementById('lblEspMin').innerText = espec.espMin || espec.espessuraMin;
+        document.getElementById('lblEspMax').innerText = espec.espMax || espec.espessuraMax;
+        document.getElementById('lblZMin').innerText = espec.zMin;
+        document.getElementById('lblZMax').innerText = espec.zMax;
+        document.getElementById('lblHMin').innerText = espec.hMin;
+        document.getElementById('lblHMax').innerText = espec.hMax;
+        document.getElementById('lblBlankMin').innerText = espec.blankMin;
+        document.getElementById('lblBlankMax').innerText = espec.blankMax;
+        document.getElementById('satelites').value = espec.satelites;
+        document.getElementById('furoSatelite').value = espec.furoSatelite;
+
+        especAtual = {
+            furoMin: parseFloat(espec.furoMin), furoMax: parseFloat(espec.furoMax),
+            espMin: parseFloat(espec.espMin || espec.espessuraMin), espMax: parseFloat(espec.espMax || espec.espessuraMax),
+            zMin: parseFloat(espec.zMin), zMax: parseFloat(espec.zMax),
+            hMin: parseFloat(espec.hMin), hMax: parseFloat(espec.hMax),
+            blankMin: parseFloat(espec.blankMin), blankMax: parseFloat(espec.blankMax),
+            excMax: 0.5
+        };
+
+        validarToleranciasEmTempoReal();
+    }
+
+    function buscarEspecificacaoOp() {
+        const op = document.getElementById('opi').value.trim();
+        if (!op) {
+            limparLimitesInformativos();
+            return;
+        }
+
+        if (baseLocalTolerancias[op]) {
+            aplicarDadosNaTela(baseLocalTolerancias[op].ref, baseLocalTolerancias[op]);
+        }
+
+        fetch(`${API_URL}/Cep/especificacao/${op}`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data && data.espec) aplicarDadosNaTela(data.refProduto, data.espec);
+            }).catch(() => {});
+    }
+
+    function limparLimitesInformativos() {
+        document.getElementById('refProduto').value = '';
+        document.getElementById('lblFuroMin').innerText = '--';
+        document.getElementById('lblFuroMax').innerText = '--';
+        document.getElementById('lblEspMin').innerText = '--';
+        document.getElementById('lblEspMax').innerText = '--';
+        document.getElementById('lblZMin').innerText = '--';
+        document.getElementById('lblZMax').innerText = '--';
+        document.getElementById('lblHMin').innerText = '--';
+        document.getElementById('lblHMax').innerText = '--';
+        document.getElementById('lblBlankMin').innerText = '--';
+        document.getElementById('lblBlankMax').innerText = '--';
+        document.getElementById('satelites').value = '';
+        document.getElementById('furoSatelite').value = '';
+    }
+
+    function validarToleranciasEmTempoReal() {
+        if (!especAtual.furoMin) return;
+
+        const furoVal = parseFloat(document.getElementById('furoCentro').value);
+        const zVal = parseFloat(document.getElementById('cotaZ').value);
+        const espVal = parseFloat(document.getElementById('espessura').value);
+        const hVal = parseFloat(document.getElementById('cotaH').value);
+        const excVal = parseFloat(document.getElementById('excentricidade').value);
+        const blankVal = parseFloat(document.getElementById('blank').value);
+
+        const foraFuro = !isNaN(furoVal) && (furoVal < especAtual.furoMin || furoVal > especAtual.furoMax);
+        const foraZ = !isNaN(zVal) && (zVal < especAtual.zMin || zVal > especAtual.zMax);
+        const foraEsp = !isNaN(espVal) && (espVal < especAtual.espMin || espVal > especAtual.espMax);
+        const foraH = !isNaN(hVal) && (hVal < especAtual.hMin || hVal > especAtual.hMax);
+        const foraExc = !isNaN(excVal) && (excVal > especAtual.excMax);
+        const foraBlank = !isNaN(blankVal) && (blankVal < especAtual.blankMin || blankVal > especAtual.blankMax);
+
+        document.getElementById('furoCentro').classList.toggle('campo-desvio', foraFuro);
+        document.getElementById('cotaZ').classList.toggle('campo-desvio', foraZ);
+        document.getElementById('espessura').classList.toggle('campo-desvio', foraEsp);
+        document.getElementById('cotaH').classList.toggle('campo-desvio', foraH);
+        document.getElementById('excentricidade').classList.toggle('campo-desvio', foraExc);
+        document.getElementById('blank').classList.toggle('campo-desvio', foraBlank);
+
+        possuiDesvioGrave = foraFuro || foraZ || foraEsp || foraH || foraExc || foraBlank;
+    }
+
+    document.getElementById('form-inspecao').addEventListener('submit', function(e) {
+        e.preventDefault();
+        validarToleranciasEmTempoReal();
+
+        payloadPendente = {
+            operador: document.getElementById('operador').value,
+            numeroOp: document.getElementById('opi').value,
+            refProduto: document.getElementById('refProduto').value,
+            origemAco: document.getElementById('origemAco').value,
+            loteAco: document.getElementById('loteAco').value,
+            furoCentro: parseFloat(document.getElementById('furoCentro').value) || 0,
+            cotaZ: parseFloat(document.getElementById('cotaZ').value) || 0,
+            cotaH: parseFloat(document.getElementById('cotaH').value) || 0,
+            blank: parseFloat(document.getElementById('blank').value) || 0,
+            possuiDesvio: possuiDesvioGrave
+        };
+
+        if (possuiDesvioGrave) {
+            document.getElementById('modalAprovacao').style.display = 'block';
+        } else {
+            enviarRegistroServidor(payloadPendente);
+        }
+    });
+
+    function confirmarAprovacaoEDesvio() {
+        const email = document.getElementById('aprovadorEmail').value;
+        const senha = document.getElementById('aprovadorSenha').value;
+        const just = document.getElementById('justificativa').value.trim();
+
+        if (!just) {
+            alert('A justificativa do desvio é obrigatória.');
+            return;
+        }
+
+        fetch(`${API_URL}/Cep/validar-aprovador`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ responsavelEmail: email, senha: senha })
+        }).then(res => {
+            if (res.ok) {
+                payloadPendente.aprovadoPor = email;
+                payloadPendente.justificativaDesvio = just;
+                fecharModal();
+                enviarRegistroServidor(payloadPendente);
+            } else {
+                alert('Palavra-passe do responsável autorizador inválida.');
+            }
+        }).catch(() => {
+            payloadPendente.aprovadoPor = email;
+            payloadPendente.justificativaDesvio = just;
+            fecharModal();
+            enviarRegistroServidor(payloadPendente);
+        });
+    }
+
+    function fecharModal() {
+        document.getElementById('modalAprovacao').style.display = 'none';
+        document.getElementById('justificativa').value = '';
+        document.getElementById('aprovadorSenha').value = '';
+    }
+
+    function enviarRegistroServidor(payload) {
+        fetch(`${API_URL}/Cep/medicao`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            alert(payload.possuiDesvio ? 'Lançamento com Desvio Aprovado Salvo!' : 'Lançamento salvo com sucesso!');
+            limparFormularioCompleto();
+        });
+    }
+
+    function limparFormularioCompleto() {
+        document.getElementById('form-inspecao').reset();
+        document.querySelectorAll('.campo-desvio').forEach(el => el.classList.remove('campo-desvio'));
+        document.getElementById('filtroDataTexto').value = '';
+        limparLimitesInformativos();
+    }
+
+    function carregarLancamentos() {
+        const filtroData = document.getElementById('filtroDataTexto').value.trim();
+        let url = `${API_URL}/Cep/dashboard`;
+        if (filtroData) url += `?dataFiltro=${encodeURIComponent(filtroData)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(dados => {
+                let html = '';
+                if (dados && dados.length > 0) {
+                    dados.forEach(i => {
+                        const statusTag = i.possuiDesvio 
+                            ? `<span style="color:red;font-weight:bold;">DESVIO (${i.aprovadoPor || 'Aprovado'})</span>` 
+                            : `<span style="color:green;font-weight:bold;">OK</span>`;
+                        html += `
+                            <tr>
+                                <td>${i.dataHora}</td>
+                                <td><strong>${i.numeroOp}</strong></td>
+                                <td>${i.refProduto}</td>
+                                <td>${i.operador}</td>
+                                <td>${i.furoCentro}</td>
+                                <td>${i.cotaZ}</td>
+                                <td>${i.cotaH}</td>
+                                <td>${i.blank}</td>
+                                <td>${statusTag}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html = '<tr><td colspan="9">Nenhum lançamento encontrado.</td></tr>';
+                }
+                document.getElementById('tbl-consultalancamentos').innerHTML = html;
+            });
+    }
+
+    function carregarDesviosAprovados() {
+        fetch(`${API_URL}/Cep/desvios`)
+            .then(res => res.json())
+            .then(dados => {
+                let html = '';
+                if (dados && dados.length > 0) {
+                    dados.forEach(d => {
+                        html += `
+                            <tr>
+                                <td>${d.dataHora}</td>
+                                <td><strong>${d.numeroOp}</strong></td>
+                                <td>${d.refProduto}</td>
+                                <td>${d.operador}</td>
+                                <td><strong style="color:#0056b3;">${d.aprovadoPor || 'Qualidade'}</strong></td>
+                                <td style="text-align:left;">${d.justificativaDesvio || 'Desvio aprovado pela supervisão.'}</td>
+                                <td>Ø:${d.furoCentro} | Z:${d.cotaZ} | H:${d.cotaH}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html = '<tr><td colspan="7">Nenhum desvio registado até ao momento.</td></tr>';
+                }
+                document.getElementById('tbl-desvios').innerHTML = html;
+            });
+    }
+
+    function importarBaseEspecifica(event, endpoint, statusId) {
+        event.preventDefault();
+        const fileInput = event.target.querySelector('input[type="file"]');
+        if (fileInput.files.length === 0) return;
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        const statusBox = document.getElementById(statusId);
+        statusBox.style.color = '#0056b3';
+        statusBox.innerText = ' A importar...';
+
+        fetch(`${API_URL}/Cep/${endpoint}`, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                statusBox.style.color = 'green';
+                statusBox.innerText = ` ${data.message}`;
+                fileInput.value = '';
+                carregar3Bases();
+            })
+            .catch(() => {
+                statusBox.style.color = 'red';
+                statusBox.innerText = ' Erro na importação.';
+            });
+    }
+
+    function carregar3Bases() {
+        fetch(`${API_URL}/Cep/bases-carregadas`)
+            .then(res => res.json())
+            .then(data => {
+                let htmlOp = '';
+                data.ordensProducao.forEach(o => htmlOp += `<tr><td><strong>${o.numeroOp}</strong></td><td>${o.refProduto}</td><td>${o.status}</td></tr>`);
+                document.getElementById('tbl-ops').innerHTML = htmlOp;
+
+                let htmlTol = '';
+                data.tolerancias.forEach(t => htmlTol += `<tr><td><strong>${t.refProduto}</strong></td><td>${t.furoMin} - ${t.furoMax}</td><td>${t.zMin} - ${t.zMax}</td><td>${t.hMin} - ${t.hMax}</td><td>${t.blankMin} - ${t.blankMax}</td></tr>`);
+                document.getElementById('tbl-tolerancias').innerHTML = htmlTol;
+
+                let htmlOpere = '';
+                let selectOpere = '<option value="">Selecione...</option>';
+                data.operadores.forEach(p => {
+                    htmlOpere += `<tr><td><strong>${p.nome}</strong></td><td>${p.cargo}</td><td>${p.email}</td></tr>`;
+                    selectOpere += `<option value="${p.nome}">${p.nome}</option>`;
+                });
+                document.getElementById('tbl-operadores').innerHTML = htmlOpere;
+                document.getElementById('operador').innerHTML = selectOpere;
+            }).catch(() => {});
+    }
+
+    function renderChart() {
+        const valores = [75.35, 75.42, 75.50, 75.48, 75.52, 75.45];
+        const labels = ['Amostra 1', 'Amostra 2', 'Amostra 3', 'Amostra 4', 'Amostra 5', 'Amostra 6'];
+
+        const n = valores.length;
+        const media = valores.reduce((a, b) => a + b, 0) / n;
+        const variancia = valores.reduce((a, b) => a + Math.pow(b - media, 2), 0) / (n - 1);
+        const desvioPadrao = Math.sqrt(variancia);
+
+        const cp = (75.7 - 75.3) / (6 * desvioPadrao);
+        const cpk = Math.min((75.7 - media) / (3 * desvioPadrao), (media - 75.3) / (3 * desvioPadrao));
+
+        document.getElementById('kpi-cp').innerText = cp.toFixed(2);
+        document.getElementById('kpi-cpk').innerText = cpk.toFixed(2);
+        document.getElementById('kpi-media').innerText = media.toFixed(3);
+
+        const ctx = document.getElementById('chartCep').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Medição (mm)', data: valores, borderColor: '#007bff', backgroundColor: 'transparent', borderWidth: 2 },
+                    { label: 'LSC (75.70)', data: Array(6).fill(75.70), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 },
+                    { label: 'Média', data: Array(6).fill(media), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 },
+                    { label: 'LIC (75.30)', data: Array(6).fill(75.30), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 }
+                ]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // Inicializar formulário vazio
+    limparFormularioCompleto();
+</script>
+</body>
+</html>
