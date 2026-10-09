@@ -9,7 +9,6 @@
         body { font-family: Arial, sans-serif; background-color: #eef2f5; padding: 15px; margin: 0; }
         .container { max-width: 1100px; margin: 0 auto; background: white; border: 2px solid #333; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         
-        /* Navegação por Abas */
         .tabs { display: flex; border-bottom: 2px solid #333; margin-bottom: 15px; }
         .tab-btn { padding: 10px 20px; font-weight: bold; cursor: pointer; border: none; background: #ddd; font-size: 14px; margin-right: 2px; }
         .tab-btn.active { background: #007bff; color: white; }
@@ -17,7 +16,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Estilos da Ficha */
         .header-title { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         .grid-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
         .cell { border: 1px solid #777; padding: 5px; background: #f9f9f9; }
@@ -29,7 +27,10 @@
         .btn-salvar { background-color: #28a745; color: white; font-size: 20px; font-weight: bold; border: none; padding: 10px; flex: 3; cursor: pointer; border-radius: 4px; }
         .btn-limpar { background-color: #ffc107; color: #000; font-size: 16px; font-weight: bold; border: none; padding: 10px; flex: 1; cursor: pointer; border-radius: 4px; }
         
-        /* Estilos dos Cartões CEP */
+        .cota-selector { margin-bottom: 20px; padding: 10px; background: #e9ecef; border-radius: 4px; display: flex; align-items: center; gap: 10px; }
+        .cota-selector label { font-weight: bold; font-size: 14px; }
+        .cota-selector select { width: auto; flex: 1; font-size: 14px; padding: 6px; }
+
         .kpi-container { display: flex; gap: 15px; margin-bottom: 20px; }
         .kpi-card { flex: 1; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-left: 5px solid #007bff; border-radius: 4px; text-align: center; }
         .kpi-title { font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; }
@@ -44,7 +45,6 @@
 <body>
 
 <div class="container">
-    <!-- Menu de Seleção de Tela -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('inspecao')">INSPEÇÃO DE PROCESSO</button>
         <button class="tab-btn" onclick="openTab('cep')">CONSULTA CEP (Cp / Cpk)</button>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="cell cell-red">
                     <span class="cell-header">Cota H (mm)</span>
-                    <input type="number" step="0.01" id="cotaH" placeholder="Valor" required>
+                    <input type="number" step="0.01" id="cotaH" placeholder="Mín: 20.0 | Máx: 20.5" required>
                 </div>
             </div>
             <div class="actions">
@@ -112,33 +112,41 @@
         </table>
     </div>
 
-    <!-- TELA 2: DASHBOARD CEP (Cp, Cpk & Cartas de Controlo) -->
+    <!-- TELA 2: DASHBOARD CEP -->
     <div id="cep" class="tab-content">
         <div class="header-title">ANÁLISE DE CAPACIDADE DO PROCESSO (CEP)</div>
         
-        <!-- KPIs Principais -->
+        <!-- Seleção da Cota para Análise -->
+        <div class="cota-selector">
+            <label for="select-cota-cep">Selecione a Cota para Análise:</label>
+            <select id="select-cota-cep" onchange="renderChart()">
+                <option value="furoCentro">Ø Furo Centro (Especificação: 71.30 - 71.70 mm)</option>
+                <option value="cotaZ">Cota Z (Especificação: 48.00 - 48.50 mm)</option>
+                <option value="cotaH">Cota H (Especificação: 20.00 - 20.50 mm)</option>
+            </select>
+        </div>
+
         <div class="kpi-container">
             <div class="kpi-card" style="border-left-color: #28a745;">
                 <div class="kpi-title">Índice Cp</div>
-                <div class="kpi-value" id="kpi-cp">1.33</div>
+                <div class="kpi-value" id="kpi-cp">--</div>
             </div>
             <div class="kpi-card" style="border-left-color: #007bff;">
                 <div class="kpi-title">Índice Cpk</div>
-                <div class="kpi-value" id="kpi-cpk">1.25</div>
+                <div class="kpi-value" id="kpi-cpk">--</div>
             </div>
             <div class="kpi-card" style="border-left-color: #ffc107;">
                 <div class="kpi-title">Média do Processo</div>
-                <div class="kpi-value" id="kpi-media">71.50 mm</div>
+                <div class="kpi-value" id="kpi-media">--</div>
             </div>
             <div class="kpi-card" style="border-left-color: #17a2b8;">
                 <div class="kpi-title">Status do Processo</div>
-                <div class="kpi-value" id="kpi-status" style="font-size: 16px; margin-top: 12px;">Capaz & Sob Controlo</div>
+                <div class="kpi-value" id="kpi-status" style="font-size: 16px; margin-top: 12px;">--</div>
             </div>
         </div>
 
-        <!-- Gráfico da Carta de Controlo -->
         <div class="chart-box">
-            <h4>Carta de Controlo (X-Barra) - Ø Furo Centro</h4>
+            <h4 id="chart-title">Carta de Controlo (X-Barra)</h4>
             <canvas id="chartCep" height="120"></canvas>
         </div>
     </div>
@@ -147,6 +155,13 @@
 <script>
     const API_URL = "https://projeto-cep-industrial.onrender.com/api";
     let chartInstance = null;
+    let listaInspecoes = [];
+
+    const especificacoes = {
+        furoCentro: { nome: 'Ø Furo Centro', lie: 71.30, lse: 71.70, nominal: 71.50 },
+        cotaZ: { nome: 'Cota Z', lie: 48.00, lse: 48.50, nominal: 48.25 },
+        cotaH: { nome: 'Cota H', lie: 20.00, lse: 20.50, nominal: 20.25 }
+    };
 
     function openTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -165,11 +180,9 @@
             .then(res => res.json())
             .then(dados => {
                 if (dados && dados.length > 0) {
+                    listaInspecoes = dados;
                     let html = '';
-                    let valoresFuro = [];
-                    let labels = [];
-
-                    dados.forEach((i, index) => {
+                    dados.forEach(i => {
                         html += `
                             <tr>
                                 <td>${i.dataHora}</td>
@@ -180,23 +193,48 @@
                                 <td><strong>${i.cotaH}</strong></td>
                             </tr>
                         `;
-                        valoresFuro.push(i.furoCentro);
-                        labels.push(`Amostra ${index + 1}`);
                     });
                     document.getElementById('tabela-historico').innerHTML = html;
-                    window.dadosGrafico = { valores: valoresFuro, labels: labels };
                 }
             });
     }
 
     function renderChart() {
-        const ctx = document.getElementById('chartCep').getContext('2d');
-        const valores = window.dadosGrafico?.valores || [71.45, 71.50, 71.52, 71.48, 71.51, 71.49];
-        const labels = window.dadosGrafico?.labels || ['Amostra 1', 'Amostra 2', 'Amostra 3', 'Amostra 4', 'Amostra 5', 'Amostra 6'];
+        const cotaChave = document.getElementById('select-cota-cep').value;
+        const esp = especificacoes[cotaChave];
 
-        if (chartInstance) {
-            chartInstance.destroy();
+        let valores = listaInspecoes.map(i => i[cotaChave]).filter(v => v > 0);
+        let labels = listaInspecoes.map((_, index) => `Amostra ${index + 1}`);
+
+        // Dados padrão caso não existam medições salvas ainda
+        if (valores.length === 0) {
+            if (cotaChave === 'furoCentro') valores = [71.45, 71.50, 71.52, 71.48, 71.51, 71.49];
+            if (cotaChave === 'cotaZ') valores = [48.20, 48.25, 48.28, 48.22, 48.26, 48.24];
+            if (cotaChave === 'cotaH') valores = [20.20, 20.22, 20.25, 20.21, 20.24, 20.23];
+            labels = ['Amostra 1', 'Amostra 2', 'Amostra 3', 'Amostra 4', 'Amostra 5', 'Amostra 6'];
         }
+
+        // Cálculos CEP
+        const n = valores.length;
+        const media = valores.reduce((a, b) => a + b, 0) / n;
+        const variancia = valores.reduce((a, b) => a + Math.pow(b - media, 2), 0) / (n > 1 ? n - 1 : 1);
+        const desvioPadrao = Math.sqrt(variancia) || 0.01;
+
+        const cp = (esp.lse - esp.lie) / (6 * desvioPadrao);
+        const cpkSup = (esp.lse - media) / (3 * desvioPadrao);
+        const cpkInf = (media - esp.lie) / (3 * desvioPadrao);
+        const cpk = Math.min(cpkSup, cpkInf);
+
+        // Atualizar KPIs
+        document.getElementById('kpi-cp').innerText = cp.toFixed(2);
+        document.getElementById('kpi-cpk').innerText = cpk.toFixed(2);
+        document.getElementById('kpi-media').innerText = `${media.toFixed(2)} mm`;
+        document.getElementById('kpi-status').innerText = cpk >= 1.33 ? "Capaz & Sob Controlo" : (cpk >= 1.0 ? "Aceitável" : "Incapaz / Instável");
+        document.getElementById('chart-title').innerText = `Carta de Controlo (X-Barra) - ${esp.nome}`;
+
+        // Renderizar Gráfico
+        const ctx = document.getElementById('chartCep').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
             type: 'line',
@@ -204,14 +242,14 @@
                 labels: labels,
                 datasets: [
                     { label: 'Medição (mm)', data: valores, borderColor: '#007bff', backgroundColor: 'transparent', borderWidth: 2 },
-                    { label: 'LSC (71.70)', data: Array(labels.length).fill(71.70), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 },
-                    { label: 'Média (71.50)', data: Array(labels.length).fill(71.50), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 },
-                    { label: 'LIC (71.30)', data: Array(labels.length).fill(71.30), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 }
+                    { label: `LSC (${esp.lse.toFixed(2)})`, data: Array(labels.length).fill(esp.lse), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 },
+                    { label: `Média (${media.toFixed(2)})`, data: Array(labels.length).fill(media), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 },
+                    { label: `LIC (${esp.lie.toFixed(2)})`, data: Array(labels.length).fill(esp.lie), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 }
                 ]
             },
             options: {
                 responsive: true,
-                scales: { y: { min: 71.20, max: 71.80 } }
+                scales: { y: { min: esp.lie - 0.1, max: esp.lse + 0.1 } }
             }
         });
     }
