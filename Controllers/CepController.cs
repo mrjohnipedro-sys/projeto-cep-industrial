@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProcessControl.API.Data;
 
 namespace ProcessControl.API.Controllers;
 
@@ -73,7 +75,12 @@ public class OpDto
 [Route("api/[controller]")]
 public class CepController : ControllerBase
 {
-    private static readonly List<InspecaoInput> Inspecoes = new();
+    private readonly AppDbContext _context;
+
+    public CepController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     private static readonly List<ToleranciaDto> ToleranciasBase = new()
     {
@@ -128,20 +135,24 @@ public class CepController : ControllerBase
     }
 
     [HttpGet("dashboard")]
-    public IActionResult GetDashboardData([FromQuery] string? dataFiltro)
+    public async Task<IActionResult> GetDashboardData([FromQuery] string? dataFiltro)
     {
-        var query = Inspecoes.AsQueryable();
+        var query = _context.Inspecoes.AsQueryable();
         if (!string.IsNullOrWhiteSpace(dataFiltro))
         {
             query = query.Where(i => i.DataHora.StartsWith(dataFiltro));
         }
-        return Ok(query.OrderByDescending(i => i.DataHora).ToList());
+        var resultado = await query.OrderByDescending(i => i.Id).ToListAsync();
+        return Ok(resultado);
     }
 
     [HttpGet("desvios")]
-    public IActionResult GetDesviosAprovados()
+    public async Task<IActionResult> GetDesviosAprovados()
     {
-        var desvios = Inspecoes.Where(i => i.PossuiDesvio).OrderByDescending(i => i.DataHora).ToList();
+        var desvios = await _context.Inspecoes
+            .Where(i => i.PossuiDesvio)
+            .OrderByDescending(i => i.Id)
+            .ToListAsync();
         return Ok(desvios);
     }
 
@@ -155,10 +166,11 @@ public class CepController : ControllerBase
     public IActionResult ImportarOps(IFormFile file) => Ok(new { Message = "Base de OPs atualizada!" });
 
     [HttpPost("medicao")]
-    public IActionResult AdicionarInspecao([FromBody] InspecaoInput inspecao)
+    public async Task<IActionResult> AdicionarInspecao([FromBody] InspecaoModel inspecao)
     {
         inspecao.DataHora = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-        Inspecoes.Add(inspecao);
-        return Ok(new { Message = "Lançamento efetuado com sucesso!" });
+        _context.Inspecoes.Add(inspecao);
+        await _context.SaveChangesAsync();
+        return Ok(new { Message = "Lançamento salvo com sucesso no banco de dados!" });
     }
 }
