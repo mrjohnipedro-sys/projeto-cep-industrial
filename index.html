@@ -65,8 +65,14 @@
                     <div style="font-size:10px; font-weight:bold; margin-top:5px;">DISCO FURO PCD</div>
                 </div>
 
-                <div class="cell"><div class="cell-title">Número da OP</div><input type="text" id="opi" value="87362" oninput="buscarEspecificacaoOp()" required></div>
-                <div class="cell"><div class="cell-title">Referência Produto</div><input type="text" id="refProduto" value="D16R6245NJ" readonly style="background:#e9ecef;"></div>
+                <div class="cell">
+                    <div class="cell-title">Número da OP</div>
+                    <input type="text" id="opi" value="87362" oninput="buscarEspecificacaoOp()" onkeyup="buscarEspecificacaoOp()" onchange="buscarEspecificacaoOp()" required>
+                </div>
+                <div class="cell">
+                    <div class="cell-title">Referência Produto</div>
+                    <input type="text" id="refProduto" value="D16R6245NJ" readonly style="background:#e9ecef;">
+                </div>
                 <div class="cell cell-red">Ø FURO CENTRO</div>
                 <div class="cell cell-red">COTA Z (mm)</div>
 
@@ -168,7 +174,11 @@
 </div>
 
 <script>
-    const API_URL = "https://projeto-cep-industrial.onrender.com/api";
+    // Dicionário local de retaguarda imediato para garantir fluidez mesmo se a API tardar
+    const baseLocalTolerancias = {
+        "87362": { ref: "D16R6245NJ", furoMin: 62.0, furoMax: 62.4, zMin: 34.25, zMax: 34.75, hMin: 8.9, hMax: 9.4, blankMin: 406.4, blankMax: 407.4 },
+        "87359": { ref: "01087500B", furoMin: 71.3, furoMax: 71.7, zMin: 48.00, zMax: 48.50, hMin: 20.00, hMax: 20.50, blankMin: 450.0, blankMax: 455.0 }
+    };
 
     function openTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -179,8 +189,39 @@
         if (tabName === 'carregamento') carregar3Bases();
     }
 
+    function aplicarDadosNaTela(ref, espec) {
+        document.getElementById('refProduto').value = ref;
+        document.getElementById('lblFuroMin').innerText = espec.furoMin;
+        document.getElementById('lblFuroMax').innerText = espec.furoMax;
+        document.getElementById('lblZMin').innerText = espec.zMin;
+        document.getElementById('lblZMax').innerText = espec.zMax;
+        document.getElementById('lblHMin').innerText = espec.hMin;
+        document.getElementById('lblHMax').innerText = espec.hMax;
+        document.getElementById('lblBlankMin').innerText = espec.blankMin;
+        document.getElementById('lblBlankMax').innerText = espec.blankMax;
+    }
+
+    function buscarEspecificacaoOp() {
+        const op = document.getElementById('opi').value.trim();
+        
+        // Atualização instantânea cliente via base local
+        if (baseLocalTolerancias[op]) {
+            const item = baseLocalTolerancias[op];
+            aplicarDadosNaTela(item.ref, item);
+        }
+
+        // Consulta complementar ao Backend API
+        fetch(`/api/Cep/especificacao/${op}`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data && data.espec) {
+                    aplicarDadosNaTela(data.refProduto, data.espec);
+                }
+            }).catch(() => {});
+    }
+
     function carregar3Bases() {
-        fetch(`${API_URL}/Cep/bases-carregadas`)
+        fetch(`/api/Cep/bases-carregadas`)
             .then(res => res.json())
             .then(data => {
                 let htmlOp = '';
@@ -199,28 +240,10 @@
                 });
                 document.getElementById('tbl-operadores').innerHTML = htmlOpere;
                 document.getElementById('operador').innerHTML = selectOpere;
-            });
+            }).catch(() => {});
     }
 
-    function buscarEspecificacaoOp() {
-        const op = document.getElementById('opi').value.trim();
-        if (!op) return;
-
-        fetch(`${API_URL}/Cep/especificacao/${op}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('refProduto').value = data.refProduto;
-                document.getElementById('lblFuroMin').innerText = data.espec.furoMin;
-                document.getElementById('lblFuroMax').innerText = data.espec.furoMax;
-                document.getElementById('lblZMin').innerText = data.espec.zMin;
-                document.getElementById('lblZMax').innerText = data.espec.zMax;
-                document.getElementById('lblHMin').innerText = data.espec.hMin;
-                document.getElementById('lblHMax').innerText = data.espec.hMax;
-                document.getElementById('lblBlankMin').innerText = data.espec.blankMin;
-                document.getElementById('lblBlankMax').innerText = data.espec.blankMax;
-            });
-    }
-
+    // Executa no carregamento inicial
     buscarEspecificacaoOp();
 </script>
 </body>
