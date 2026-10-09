@@ -10,6 +10,12 @@
         .container { max-width: 1200px; margin: 0 auto; background: white; border: 2px solid #333; padding: 15px; }
         .header-title { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         
+        .tabs { display: flex; border-bottom: 2px solid #333; margin-bottom: 15px; }
+        .tab-btn { padding: 10px 18px; font-weight: bold; cursor: pointer; border: none; background: #ddd; font-size: 12px; margin-right: 2px; }
+        .tab-btn.active { background: #007bff; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .grid-container { display: grid; grid-template-columns: 200px 1fr 1fr 1fr 1fr; gap: 2px; background: #333; border: 2px solid #333; }
         .cell { background: white; padding: 6px; font-size: 12px; }
         .cell-title { font-weight: bold; background: #e9ecef; text-align: center; font-size: 11px; text-transform: uppercase; }
@@ -24,11 +30,9 @@
 
         .btn-salvar { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; border: none; padding: 15px; width: 70%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
         .btn-limpar { background-color: #ffc107; color: #000; font-size: 18px; font-weight: bold; border: none; padding: 15px; width: 28%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
-        
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px; border: 2px solid #333; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
+        .base-box { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; background: #fafafa; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         th, td { border: 1px solid #333; padding: 6px; text-align: center; }
         th { background-color: #e9ecef; }
     </style>
@@ -36,100 +40,164 @@
 <body>
 
 <div class="container">
-    <div class="header-title">INSPEÇÃO DE PROCESSO - LINHA FURO DISCOS</div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('inspecao')">INSPEÇÃO DE PROCESSO</button>
+        <button class="tab-btn" onclick="openTab('carregamento')">BASES SINCRO (EXCEL)</button>
+        <button class="tab-btn" onclick="openTab('cep')">CONSULTA CEP (Cp / Cpk)</button>
+    </div>
 
-    <form id="form-inspecao">
-        <div class="grid-container">
-            <!-- Coluna Imagem / Esquema -->
-            <div class="cell" style="grid-row: span 5; text-align: center;">
-                <img src="https://i.imgur.com/2Xy8o3G.png" alt="Esquema Disco" style="max-width: 100%; height: auto;">
-                <div style="font-size:10px; font-weight:bold; margin-top:5px;">DIGITE CADASTRO ACIMA</div>
+    <!-- TELA 1: LANÇAMENTO DE INSPEÇÃO -->
+    <div id="inspecao" class="tab-content active">
+        <div class="header-title">INSPEÇÃO DE PROCESSO - LINHA FURO DISCOS</div>
+        <form id="form-inspecao">
+            <div class="grid-container">
+                <div class="cell" style="grid-row: span 5; text-align: center;">
+                    <img src="https://i.imgur.com/2Xy8o3G.png" alt="Esquema" style="max-width: 100%; height: auto;">
+                    <div style="font-size:10px; font-weight:bold; margin-top:5px;">DIGITE CADASTRO ACIMA</div>
+                </div>
+
+                <div class="cell"><div class="cell-title">Número da OP</div><input type="text" id="opi" value="87362" onchange="buscarEspecificacaoOp()" required></div>
+                <div class="cell"><div class="cell-title">Referência Produto</div><input type="text" id="refProduto" value="D16R6245NJ" readonly style="background:#e9ecef;"></div>
+                <div class="cell cell-red">Ø FURO CENTRO</div>
+                <div class="cell cell-red">COTA Z (mm)</div>
+
+                <div class="cell"><div class="cell-title">Operador</div><select id="operador"><option value="Johni Pedro">Johni Pedro</option></select></div>
+                <div class="cell"><div class="cell-title">Nº Origem do Aço</div><input type="text" id="origemAco"></div>
+                <div class="cell">
+                    <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblFuroMin">62,0</div><div class="lim-val" id="lblFuroMax">62,4</div></div>
+                    <input type="number" step="0.01" id="furoCentro" required>
+                </div>
+                <div class="cell">
+                    <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblZMin">34,25</div><div class="lim-val" id="lblZMax">34,75</div></div>
+                    <input type="number" step="0.01" id="cotaZ" required>
+                </div>
+
+                <div class="cell"><div class="cell-title">Nº Lote do Aço</div><input type="text" id="loteAco"></div>
+                <div class="cell"><div class="cell-title">Rebarba OK/NOK</div><select id="rebarba"><option value="OK">OK</option><option value="NOK">NOK</option></select></div>
+                <div class="cell cell-green">ESPESSURA</div>
+                <div class="cell cell-red">COTA H (mm)</div>
+
+                <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="6" readonly></div>
+                <div class="cell"><div class="cell-title">Ø Furo Satélite (mm)</div><input type="text" id="furoSatelite" value="11,5" readonly></div>
+                <div class="cell">
+                    <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblEspMin">4,25</div><div class="lim-val" id="lblEspMax">4,75</div></div>
+                    <input type="number" step="0.01" id="espessura">
+                </div>
+                <div class="cell">
+                    <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblHMin">8,9</div><div class="lim-val" id="lblHMax">9,4</div></div>
+                    <input type="number" step="0.01" id="cotaH" required>
+                </div>
+
+                <div class="cell"><div class="cell-title">Nº Passa/Não Passa</div><input type="text" id="pnp" value="0"></div>
+                <div class="cell"><div class="cell-title">Ø FURO PCD OK/NOK</div><select id="furoPcd"><option value="OK">OK</option><option value="NOK">NOK</option></select></div>
+                <div class="cell cell-green">
+                    <div>Excentricidade</div>
+                    <div class="sub-grid" style="font-size:9px;"><div>0,2</div><div>≤ 0,5 mm</div></div>
+                    <input type="number" step="0.01" id="excentricidade">
+                </div>
+                <div class="cell cell-red">
+                    <div>Ø BLANK (mm)</div>
+                    <div class="sub-grid"><div class="lim-val" id="lblBlankMin">406,4</div><div class="lim-val" id="lblBlankMax">407,4</div></div>
+                    <input type="number" step="0.1" id="blank">
+                </div>
             </div>
 
-            <!-- Linha 1 -->
-            <div class="cell"><div class="cell-title">Número da OP</div><input type="text" id="opi" value="87362" onchange="buscarEspecificacaoOp()" required></div>
-            <div class="cell"><div class="cell-title">Referência Produto</div><input type="text" id="refProduto" value="D16R6245NJ" readonly style="background:#e9ecef;"></div>
-            <div class="cell cell-red">Ø FURO CENTRO</div>
-            <div class="cell cell-red">COTA Z (mm)</div>
+            <div style="text-align: center;">
+                <button type="submit" class="btn-salvar">SALVAR</button>
+                <button type="button" class="btn-limpar" onclick="document.getElementById('form-inspecao').reset()">LIMPAR</button>
+            </div>
+        </form>
+    </div>
 
-            <!-- Linha 2 (Mín/Máx) -->
-            <div class="cell"><div class="cell-title">Operador</div><input type="text" id="operador" placeholder="Nome" required></div>
-            <div class="cell"><div class="cell-title">Nº Origem do Aço</div><input type="text" id="origemAco"></div>
-            <div class="cell">
-                <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                <div class="sub-grid"><div class="lim-val" id="lblFuroMin">62,0</div><div class="lim-val" id="lblFuroMax">62,4</div></div>
-                <input type="number" step="0.01" id="furoCentro" oninput="validar()" required>
-            </div>
-            <div class="cell">
-                <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                <div class="sub-grid"><div class="lim-val" id="lblZMin">34,25</div><div class="lim-val" id="lblZMax">34,75</div></div>
-                <input type="number" step="0.01" id="cotaZ" oninput="validar()" required>
-            </div>
-
-            <!-- Linha 3 -->
-            <div class="cell"><div class="cell-title">Nº Lote do Aço</div><input type="text" id="loteAco"></div>
-            <div class="cell"><div class="cell-title">Rebarba OK/NOK</div><select id="rebarba"><option value="OK">OK</option><option value="NOK">NOK</option></select></div>
-            <div class="cell cell-green">ESPESSURA</div>
-            <div class="cell cell-red">COTA H (mm)</div>
-
-            <!-- Linha 4 (Mín/Máx) -->
-            <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="6" readonly></div>
-            <div class="cell"><div class="cell-title">Ø Furo Satélite (mm)</div><input type="text" id="furoSatelite" value="11,5" readonly></div>
-            <div class="cell">
-                <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                <div class="sub-grid"><div class="lim-val" id="lblEspMin">4,25</div><div class="lim-val" id="lblEspMax">4,75</div></div>
-                <input type="number" step="0.01" id="espessura" oninput="validar()">
-            </div>
-            <div class="cell">
-                <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                <div class="sub-grid"><div class="lim-val" id="lblHMin">8,9</div><div class="lim-val" id="lblHMax">9,4</div></div>
-                <input type="number" step="0.01" id="cotaH" oninput="validar()" required>
-            </div>
-
-            <!-- Linha 5 -->
-            <div class="cell"><div class="cell-title">Nº Passa/Não Passa</div><input type="text" id="pnp" value="0"></div>
-            <div class="cell"><div class="cell-title">Ø FURO PCD OK/NOK</div><select id="furoPcd"><option value="OK">OK</option><option value="NOK">NOK</option></select></div>
-            <div class="cell cell-green">
-                <div>Excentricidade</div>
-                <div class="sub-grid" style="font-size:9px;"><div>0,2</div><div>≤ 0,5 mm</div></div>
-                <input type="number" step="0.01" id="excentricidade" oninput="validar()">
-            </div>
-            <div class="cell cell-red">
-                <div>Ø BLANK (mm)</div>
-                <div class="sub-grid"><div class="lim-val" id="lblBlankMin">406,4</div><div class="lim-val" id="lblBlankMax">407,4</div></div>
-                <input type="number" step="0.1" id="blank" oninput="validar()">
-            </div>
+    <!-- TELA 2: GESTÃO DAS 3 BASES (CARREGAMENTO EXCEL) -->
+    <div id="carregamento" class="tab-content">
+        <div class="header-title">GESTÃO DE BASES CARREGADAS (EXCEL)</div>
+        
+        <div style="border: 1px dashed #007bff; background: #f0f7ff; padding: 12px; margin-bottom: 15px; border-radius: 4px;">
+            <strong>Upload do Ficheiro Excel (.xlsm / .xlsx):</strong>
+            <form id="form-importar-excel" style="display: inline-flex; gap: 10px; margin-left: 10px;">
+                <input type="file" id="excelFile" accept=".xlsx, .xlsm" required>
+                <button type="submit" style="background:#0056b3; color:white; border:none; padding:5px 10px; font-weight:bold; cursor:pointer;">Atualizar Todas as Bases</button>
+            </form>
+            <span id="status-sincro" style="font-size:12px; font-weight:bold; margin-left:10px;"></span>
         </div>
 
-        <div style="text-align: center;">
-            <button type="submit" class="btn-salvar">SALVAR</button>
-            <button type="button" class="btn-limpar" onclick="document.getElementById('form-inspecao').reset()">LIMPAR</button>
+        <!-- BASE 1: ORDENS DE PRODUÇÃO -->
+        <div class="base-box">
+            <h4 style="margin:0 0 5px 0; color:#0056b3;">1. Base de Ordens de Produção (Aba 'opabertas')</h4>
+            <table>
+                <thead><tr><th>Nº da OP</th><th>Referência Produto</th><th>Status</th></tr></thead>
+                <tbody id="tbl-ops"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
         </div>
-    </form>
 
-    <h3 style="margin-top:25px;">Histórico de Inspeções</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Data / Hora</th>
-                <th>OP</th>
-                <th>Produto</th>
-                <th>Ø Furo Centro</th>
-                <th>Cota Z</th>
-                <th>Cota H</th>
-                <th>Excentricidade</th>
-                <th>Ø Blank</th>
-            </tr>
-        </thead>
-        <tbody id="tabela-historico">
-            <tr><td colspan="8">Sem dados lançados.</td></tr>
-        </tbody>
-    </table>
+        <!-- BASE 2: TOLERÂNCIAS DA ENGENHARIA -->
+        <div class="base-box">
+            <h4 style="margin:0 0 5px 0; color:#d9534f;">2. Base de Tolerâncias Dimensionais (Aba 'base')</h4>
+            <table>
+                <thead><tr><th>Ref. Produto</th><th>Ø Furo Centro (Mín/Máx)</th><th>Cota Z (Mín/Máx)</th><th>Cota H (Mín/Máx)</th><th>Ø Blank (Mín/Máx)</th></tr></thead>
+                <tbody id="tbl-tolerancias"><tr><td colspan="5">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <!-- BASE 3: COLABORADORES -->
+        <div class="base-box">
+            <h4 style="margin:0 0 5px 0; color:#5cb85c;">3. Base de Operadores e Colaboradores (Aba 'colaboradores')</h4>
+            <table>
+                <thead><tr><th>Nome</th><th>Cargo</th><th>Email</th></tr></thead>
+                <tbody id="tbl-operadores"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TELA 3: CONSULTA CEP -->
+    <div id="cep" class="tab-content">
+        <div class="header-title">ANÁLISE DE CAPACIDADE CEP</div>
+        <p style="text-align:center;">Gráficos e Índices de Capacidade.</p>
+    </div>
 </div>
 
 <script>
     const API_URL = "https://projeto-cep-industrial.onrender.com/api";
-    let especAtiva = { furoMin: 62.0, furoMax: 62.4, zMin: 34.25, zMax: 34.75, espMin: 4.25, espMax: 4.75, hMin: 8.9, hMax: 9.4, excMax: 0.5, blankMin: 406.4, blankMax: 407.4 };
+
+    function openTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+
+        if (tabName === 'carregamento') carregar3Bases();
+    }
+
+    function carregar3Bases() {
+        fetch(`${API_URL}/Cep/bases-carregadas`)
+            .then(res => res.json())
+            .then(data => {
+                // Tabela 1: OPs
+                let htmlOp = '';
+                data.ordensProducao.forEach(o => htmlOp += `<tr><td><strong>${o.numeroOp}</strong></td><td>${o.refProduto}</td><td>${o.status}</td></tr>`);
+                document.getElementById('tbl-ops').innerHTML = htmlOp;
+
+                // Tabela 2: Tolerâncias
+                let htmlTol = '';
+                data.tolerancias.forEach(t => htmlTol += `<tr><td><strong>${t.refProduto}</strong></td><td>${t.furoMin} - ${t.furoMax}</td><td>${t.zMin} - ${t.zMax}</td><td>${t.hMin} - ${t.hMax}</td><td>${t.blankMin} - ${t.blankMax}</td></tr>`);
+                document.getElementById('tbl-tolerancias').innerHTML = htmlTol;
+
+                // Tabela 3: Operadores
+                let htmlOpere = '';
+                let selectOpere = '';
+                data.operadores.forEach(p => {
+                    htmlOpere += `<tr><td><strong>${p.nome}</strong></td><td>${p.cargo}</td><td>${p.email}</td></tr>`;
+                    selectOpere += `<option value="${p.nome}">${p.nome}</option>`;
+                });
+                document.getElementById('tbl-operadores').innerHTML = htmlOpere;
+                document.getElementById('operador').innerHTML = selectOpere;
+            });
+    }
 
     function buscarEspecificacaoOp() {
         const op = document.getElementById('opi').value;
@@ -137,39 +205,15 @@
             .then(res => res.json())
             .then(data => {
                 document.getElementById('refProduto').value = data.refProduto;
-                especAtiva = {
-                    furoMin: data.espec.furoMin, furoMax: data.espec.furoMax,
-                    zMin: data.espec.zMin, zMax: data.espec.zMax,
-                    espMin: data.espec.espessuraMin, espMax: data.espec.espessuraMax,
-                    hMin: data.espec.hMin, hMax: data.espec.hMax,
-                    excMax: data.espec.excMax,
-                    blankMin: data.espec.blankMin, blankMax: data.espec.blankMax
-                };
-
-                // Atualizar labels na tela
-                document.getElementById('lblFuroMin').innerText = especAtiva.furoMin;
-                document.getElementById('lblFuroMax').innerText = especAtiva.furoMax;
-                document.getElementById('lblZMin').innerText = especAtiva.zMin;
-                document.getElementById('lblZMax').innerText = especAtiva.zMax;
-                document.getElementById('lblEspMin').innerText = especAtiva.espMin;
-                document.getElementById('lblEspMax').innerText = especAtiva.espMax;
-                document.getElementById('lblHMin').innerText = especAtiva.hMin;
-                document.getElementById('lblHMax').innerText = especAtiva.hMax;
-                document.getElementById('lblBlankMin').innerText = especAtiva.blankMin;
-                document.getElementById('lblBlankMax').innerText = especAtiva.blankMax;
-
-                validar();
+                document.getElementById('lblFuroMin').innerText = data.espec.furoMin;
+                document.getElementById('lblFuroMax').innerText = data.espec.furoMax;
+                document.getElementById('lblZMin').innerText = data.espec.zMin;
+                document.getElementById('lblZMax').innerText = data.espec.zMax;
+                document.getElementById('lblHMin').innerText = data.espec.hMin;
+                document.getElementById('lblHMax').innerText = data.espec.hMax;
+                document.getElementById('lblBlankMin').innerText = data.espec.blankMin;
+                document.getElementById('lblBlankMax').innerText = data.espec.blankMax;
             });
-    }
-
-    function validar() {
-        const furo = parseFloat(document.getElementById('furoCentro').value);
-        const z = parseFloat(document.getElementById('cotaZ').value);
-        const h = parseFloat(document.getElementById('cotaH').value);
-
-        if (furo) document.getElementById('furoCentro').classList.toggle('desvio', furo < especAtiva.furoMin || furo > especAtiva.furoMax);
-        if (z) document.getElementById('cotaZ').classList.toggle('desvio', z < especAtiva.zMin || z > especAtiva.zMax);
-        if (h) document.getElementById('cotaH').classList.toggle('desvio', h < especAtiva.hMin || h > especAtiva.hMax);
     }
 
     buscarEspecificacaoOp();
