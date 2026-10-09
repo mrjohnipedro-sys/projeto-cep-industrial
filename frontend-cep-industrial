@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEP Industrial - Painel</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1 { color: #333; }
+        .metric { display: inline-block; margin-right: 20px; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Painel de Controlo Estatístico do Processo (CEP)</h1>
+    <div class="card" id="cep-data">Carregando dados do processo...</div>
+    <div class="card" id="user-data">Carregando utilizadores...</div>
+
+    <script>
+        const API_URL = "https://projeto-cep-industrial.onrender.com/api";
+
+        // Carregar dados de CEP
+        fetch(`${API_URL}/Cep/dashboard`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('cep-data').innerHTML = `
+                    <h2>Equipamento: ${data.equipamento}</h2>
+                    <p>Lote: ${data.lote}</p>
+                    <div class="metric"><span class="metric-value">${data.cp}</span><br>Cp</div>
+                    <div class="metric"><span class="metric-value">${data.cpk}</span><br>Cpk</div>
+                    <p>Status: <strong>${data.status}</strong></p>
+                `;
+            });
+
+        // Carregar Utilizadores
+        fetch(`${API_URL}/User`)
+            .then(res => res.json())
+            .then(users => {
+                let html = '<h2>Utilizadores do Sistema</h2><ul>';
+                users.forEach(u => {
+                    html += `<li><strong>${u.name}</strong> - ${u.role} (${u.email})</li>`;
+                });
+                html += '</ul>';
+                document.getElementById('user-data').innerHTML = html;
+            });
+    </script>
+</body>
+</html>
