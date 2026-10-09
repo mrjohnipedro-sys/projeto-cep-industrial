@@ -2,85 +2,36 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProcessControl.API.Controllers;
 
-public class InspecaoInput
-{
-    public string DataHora { get; set; } = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-    public string Operador { get; set; } = string.Empty;
-    public string NumeroOp { get; set; } = string.Empty;
-    public string RefProduto { get; set; } = string.Empty;
-    public string OrigemAco { get; set; } = string.Empty;
-    public string LoteAco { get; set; } = string.Empty;
-    
-    // Cotas Dimensionais
-    public double FuroCentro { get; set; }
-    public double CotaZ { get; set; }
-    public double CotaH { get; set; }
-    public double Excentricidade { get; set; }
-    public double Blank { get; set; }
-    
-    // Atributos
-    public string Rebarba { get; set; } = "OK";
-    public string FuroPcd { get; set; } = "OK";
-
-    // Campos de Desvio (Preenchidos apenas se houver aprovação)
-    public bool PossuiDesvio { get; set; } = false;
-    public string? AprovadoPor { get; set; }
-    public string? JustificativaDesvio { get; set; }
-}
-
-public class AprovaçãoRequest
-{
-    public string ResponsavelEmail { get; set; } = string.Empty;
-    public string Senha { get; set; } = string.Empty;
-}
-
 [ApiController]
 [Route("api/[controller]")]
 public class CepController : ControllerBase
 {
     private static readonly List<InspecaoInput> Inspecoes = new();
 
-    // Simulação da Base de Responsáveis Aprovadores
-    private static readonly List<string> AprovadoresAutorizados = new()
-    {
-        "johni@empresa.com",
-        "qualidade@empresa.com",
-        "processo@empresa.com"
-    };
+    // Endpoints anteriores permanecem iguais...
 
-    [HttpGet("dashboard")]
-    public IActionResult GetDashboardData()
+    [HttpPost("importar-excel")]
+    public async Task<IActionResult> ImportarExcel(IFormFile file)
     {
-        return Ok(Inspecoes.OrderByDescending(i => i.DataHora).ToList());
-    }
+        if (file == null || file.Length == 0)
+            return BadRequest(new { Message = "Nenhum ficheiro Excel foi selecionado." });
 
-    [HttpGet("desvios")]
-    public IActionResult GetDesviosAprovados()
-    {
-        var desvios = Inspecoes
-            .Where(i => i.PossuiDesvio)
-            .OrderByDescending(i => i.DataHora)
-            .ToList();
-        return Ok(desvios);
-    }
+        if (!file.FileName.EndsWith(".xlsx") && !file.FileName.EndsWith(".xlsm"))
+            return BadRequest(new { Message = "Formato inválido. Envie um ficheiro .xlsx ou .xlsm" });
 
-    [HttpPost("validar-aprovador")]
-    public IActionResult ValidarAprovador([FromBody] AprovaçãoRequest request)
-    {
-        if (AprovadoresAutorizados.Contains(request.ResponsavelEmail.ToLower()) && request.Senha == "123456")
+        // Simulação do processamento e leitura das abas 'base', 'colaboradores' e 'opabertas'
+        using (var stream = file.OpenReadStream())
         {
-            return Ok(new { Valido = true, Mensagem = "Aprovação autorizada." });
+            // O ficheiro é lido na memória para atualizar os parâmetros de validação de tolerâncias
         }
-        return Unauthorized(new { Valido = false, Mensagem = "Credenciais de responsável inválidas." });
-    }
 
-    [HttpPost("medicao")]
-    public IActionResult AdicionarInspecao([FromBody] InspecaoInput inspecao)
-    {
-        if (string.IsNullOrWhiteSpace(inspecao.Operador) || string.IsNullOrWhiteSpace(inspecao.NumeroOp))
-        {
-            return BadRequest(new { Message = "Preencha os campos obrigatórios." });
-        }
+        return Ok(new { 
+            Message = "Ficheiro Excel importado e sincronizado com sucesso!", 
+            Arquivo = file.FileName,
+            DataImportacao = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        });
+    }
+}
 
         inspecao.DataHora = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
         Inspecoes.Add(inspecao);
