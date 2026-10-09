@@ -7,15 +7,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #eef2f5; padding: 10px; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border: 2px solid #333; padding: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border: 2px solid #333; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .header-title { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         
+        /* Abas */
         .tabs { display: flex; border-bottom: 2px solid #333; margin-bottom: 15px; }
         .tab-btn { padding: 10px 18px; font-weight: bold; cursor: pointer; border: none; background: #ddd; font-size: 12px; margin-right: 2px; }
         .tab-btn.active { background: #007bff; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Grade de Lançamento */
         .grid-container { display: grid; grid-template-columns: 200px 1fr 1fr 1fr 1fr; gap: 2px; background: #333; border: 2px solid #333; }
         .cell { background: white; padding: 6px; font-size: 12px; }
         .cell-title { font-weight: bold; background: #e9ecef; text-align: center; font-size: 11px; text-transform: uppercase; }
@@ -28,23 +30,34 @@
         input, select { width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; font-size: 12px; font-weight: bold; text-align: center; }
         input.desvio { background-color: #f8d7da !important; border: 2px solid #dc3545 !important; color: #721c24; }
 
+        /* Botoes */
         .btn-salvar { background-color: #28a745; color: white; font-size: 24px; font-weight: bold; border: none; padding: 15px; width: 70%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
         .btn-limpar { background-color: #ffc107; color: #000; font-size: 18px; font-weight: bold; border: none; padding: 15px; width: 28%; cursor: pointer; border-radius: 6px; margin-top: 15px; }
 
+        /* Carregamento / Bases */
         .base-box { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; background: #fafafa; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         th, td { border: 1px solid #333; padding: 6px; text-align: center; }
         th { background-color: #e9ecef; }
+
+        /* Cartoes CEP */
+        .kpi-container { display: flex; gap: 15px; margin-bottom: 20px; }
+        .kpi-card { flex: 1; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-left: 5px solid #007bff; border-radius: 4px; text-align: center; }
+        .kpi-title { font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; }
+        .kpi-value { font-size: 28px; font-weight: bold; color: #333; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- MENU DE ABAS -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('inspecao')">INSPEÇÃO DE PROCESSO</button>
         <button class="tab-btn" onclick="openTab('carregamento')">BASES SINCRO (EXCEL)</button>
+        <button class="tab-btn" onclick="openTab('cep')">CONSULTA CEP (Cp / Cpk)</button>
     </div>
 
+    <!-- TELA 1: LANÇAMENTO DE INSPEÇÃO -->
     <div id="inspecao" class="tab-content active">
         <div class="header-title">INSPEÇÃO DE PROCESSO - LINHA FURO DISCOS</div>
         <form id="form-inspecao">
@@ -125,14 +138,86 @@
             </div>
         </form>
     </div>
+
+    <!-- TELA 2: GESTÃO DAS 3 BASES (CARREGAMENTO EXCEL) -->
+    <div id="carregamento" class="tab-content">
+        <div class="header-title">GESTÃO DE BASES CARREGADAS (EXCEL)</div>
+        
+        <div style="border: 1px dashed #007bff; background: #f0f7ff; padding: 12px; margin-bottom: 15px; border-radius: 4px;">
+            <strong>Upload do Ficheiro Excel (.xlsm / .xlsx):</strong>
+            <form id="form-importar-excel" style="display: inline-flex; gap: 10px; margin-left: 10px;">
+                <input type="file" id="excelFile" accept=".xlsx, .xlsm" required>
+                <button type="submit" style="background:#0056b3; color:white; border:none; padding:5px 10px; font-weight:bold; cursor:pointer;">Atualizar Todas as Bases</button>
+            </form>
+            <span id="status-sincro" style="font-size:12px; font-weight:bold; margin-left:10px;"></span>
+        </div>
+
+        <div class="base-box">
+            <h4 style="margin:0 0 5px 0; color:#0056b3;">1. Base de Ordens de Produção (Aba 'opabertas')</h4>
+            <table>
+                <thead><tr><th>Nº da OP</th><th>Referência Produto</th><th>Status</th></tr></thead>
+                <tbody id="tbl-ops"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div class="base-box">
+            <h4 style="margin:0 0 5px 0; color:#d9534f;">2. Base de Tolerâncias Dimensionais (Aba 'base')</h4>
+            <table>
+                <thead><tr><th>Ref. Produto</th><th>Ø Furo Centro (Mín/Máx)</th><th>Cota Z (Mín/Máx)</th><th>Cota H (Mín/Máx)</th><th>Ø Blank (Mín/Máx)</th></tr></thead>
+                <tbody id="tbl-tolerancias"><tr><td colspan="5">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div class="base-box">
+            <h4 style="margin:0 0 5px 0; color:#5cb85c;">3. Base de Operadores e Colaboradores (Aba 'colaboradores')</h4>
+            <table>
+                <thead><tr><th>Nome</th><th>Cargo</th><th>Email</th></tr></thead>
+                <tbody id="tbl-operadores"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TELA 3: CONSULTA CEP -->
+    <div id="cep" class="tab-content">
+        <div class="header-title">ANÁLISE DE CAPACIDADE DO PROCESSO (CEP)</div>
+        <div style="margin-bottom:15px; text-align:center;">
+            <label><strong>Selecione a Cota para Análise:</strong></label>
+            <select id="select-cota-cep" onchange="renderChart()" style="width:auto; padding:5px;">
+                <option value="furoCentro">Ø Furo Centro</option>
+                <option value="cotaZ">Cota Z</option>
+                <option value="cotaH">Cota H</option>
+            </select>
+        </div>
+        <div class="kpi-container">
+            <div class="kpi-card" style="border-left-color: #28a745;"><div class="kpi-title">Cp</div><div class="kpi-value" id="kpi-cp">--</div></div>
+            <div class="kpi-card" style="border-left-color: #007bff;"><div class="kpi-title">Cpk</div><div class="kpi-value" id="kpi-cpk">--</div></div>
+            <div class="kpi-card" style="border-left-color: #ffc107;"><div class="kpi-title">Média</div><div class="kpi-value" id="kpi-media">--</div></div>
+        </div>
+        <div style="background:#fff; padding:15px; border:1px solid #ccc;">
+            <canvas id="chartCep" height="100"></canvas>
+        </div>
+    </div>
 </div>
 
 <script>
+    const API_URL = "https://projeto-cep-industrial.onrender.com/api";
+    let chartInstance = null;
+
     const baseLocalTolerancias = {
         "87356": { ref: "D17R754GS", furoMin: 75.3, furoMax: 75.7, espMin: 3.75, espMax: 4.25, zMin: 48.0, zMax: 48.5, hMin: 14.875, hMax: 15.375, blankMin: 431.3, blankMax: 432.3, satelites: 6, furoSatelite: 9.25 },
         "87362": { ref: "D16R6245NJ", furoMin: 62.0, furoMax: 62.4, espMin: 4.25, espMax: 4.75, zMin: 34.25, zMax: 34.75, hMin: 8.90, hMax: 9.40, blankMin: 406.4, blankMax: 407.4, satelites: 6, furoSatelite: 11.5 },
         "87359": { ref: "01087500B", furoMin: 71.3, furoMax: 71.7, espMin: 4.25, espMax: 4.75, zMin: 48.00, zMax: 48.50, hMin: 20.00, hMax: 20.50, blankMin: 450.0, blankMax: 455.0, satelites: 6, furoSatelite: 11.5 }
     };
+
+    function openTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+
+        if (tabName === 'carregamento') carregar3Bases();
+        if (tabName === 'cep') renderChart();
+    }
 
     function aplicarDadosNaTela(ref, espec) {
         document.getElementById('refProduto').value = ref;
@@ -156,11 +241,68 @@
             aplicarDadosNaTela(baseLocalTolerancias[op].ref, baseLocalTolerancias[op]);
         }
 
-        fetch(`/api/Cep/especificacao/${op}`)
+        fetch(`${API_URL}/Cep/especificacao/${op}`)
             .then(res => res.ok ? res.json() : null)
             .then(data => {
                 if (data && data.espec) aplicarDadosNaTela(data.refProduto, data.espec);
             }).catch(() => {});
+    }
+
+    function carregar3Bases() {
+        fetch(`${API_URL}/Cep/bases-carregadas`)
+            .then(res => res.json())
+            .then(data => {
+                let htmlOp = '';
+                data.ordensProducao.forEach(o => htmlOp += `<tr><td><strong>${o.numeroOp}</strong></td><td>${o.refProduto}</td><td>${o.status}</td></tr>`);
+                document.getElementById('tbl-ops').innerHTML = htmlOp;
+
+                let htmlTol = '';
+                data.tolerancias.forEach(t => htmlTol += `<tr><td><strong>${t.refProduto}</strong></td><td>${t.furoMin} - ${t.furoMax}</td><td>${t.zMin} - ${t.zMax}</td><td>${t.hMin} - ${t.hMax}</td><td>${t.blankMin} - ${t.blankMax}</td></tr>`);
+                document.getElementById('tbl-tolerancias').innerHTML = htmlTol;
+
+                let htmlOpere = '';
+                let selectOpere = '';
+                data.operadores.forEach(p => {
+                    htmlOpere += `<tr><td><strong>${p.nome}</strong></td><td>${p.cargo}</td><td>${p.email}</td></tr>`;
+                    selectOpere += `<option value="${p.nome}">${p.nome}</option>`;
+                });
+                document.getElementById('tbl-operadores').innerHTML = htmlOpere;
+                document.getElementById('operador').innerHTML = selectOpere;
+            }).catch(() => {});
+    }
+
+    function renderChart() {
+        const valores = [75.35, 75.42, 75.50, 75.48, 75.52, 75.45];
+        const labels = ['Amostra 1', 'Amostra 2', 'Amostra 3', 'Amostra 4', 'Amostra 5', 'Amostra 6'];
+
+        const n = valores.length;
+        const media = valores.reduce((a, b) => a + b, 0) / n;
+        const variancia = valores.reduce((a, b) => a + Math.pow(b - media, 2), 0) / (n - 1);
+        const desvioPadrao = Math.sqrt(variancia);
+
+        const cp = (75.7 - 75.3) / (6 * desvioPadrao);
+        const cpk = Math.min((75.7 - media) / (3 * desvioPadrao), (media - 75.3) / (3 * desvioPadrao));
+
+        document.getElementById('kpi-cp').innerText = cp.toFixed(2);
+        document.getElementById('kpi-cpk').innerText = cpk.toFixed(2);
+        document.getElementById('kpi-media').innerText = media.toFixed(3);
+
+        const ctx = document.getElementById('chartCep').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Medição (mm)', data: valores, borderColor: '#007bff', backgroundColor: 'transparent', borderWidth: 2 },
+                    { label: 'LSC (75.70)', data: Array(6).fill(75.70), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 },
+                    { label: 'Média', data: Array(6).fill(media), borderColor: '#28a745', borderDash: [3, 3], pointRadius: 0 },
+                    { label: 'LIC (75.30)', data: Array(6).fill(75.30), borderColor: '#dc3545', borderDash: [5, 5], pointRadius: 0 }
+                ]
+            },
+            options: { responsive: true }
+        });
     }
 
     buscarEspecificacaoOp();
