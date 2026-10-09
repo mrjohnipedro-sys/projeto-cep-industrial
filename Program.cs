@@ -27,6 +27,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors("AllowPublic");
+
 app.MapGet("/", () => "API CEP Industrial ativa!");
+app.MapControllers();
 
 app.Run();
