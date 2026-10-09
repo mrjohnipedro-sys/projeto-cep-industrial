@@ -43,10 +43,8 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('inspecao')">INSPEÇÃO DE PROCESSO</button>
         <button class="tab-btn" onclick="openTab('carregamento')">BASES SINCRO (EXCEL)</button>
-        <button class="tab-btn" onclick="openTab('cep')">CONSULTA CEP (Cp / Cpk)</button>
     </div>
 
-    <!-- TELA 1: LANÇAMENTO DE INSPEÇÃO -->
     <div id="inspecao" class="tab-content active">
         <div class="header-title">INSPEÇÃO DE PROCESSO - LINHA FURO DISCOS</div>
         <form id="form-inspecao">
@@ -67,11 +65,11 @@
 
                 <div class="cell">
                     <div class="cell-title">Número da OP</div>
-                    <input type="text" id="opi" value="87362" oninput="buscarEspecificacaoOp()" onkeyup="buscarEspecificacaoOp()" onchange="buscarEspecificacaoOp()" required>
+                    <input type="text" id="opi" value="87356" oninput="buscarEspecificacaoOp()" onkeyup="buscarEspecificacaoOp()" required>
                 </div>
                 <div class="cell">
                     <div class="cell-title">Referência Produto</div>
-                    <input type="text" id="refProduto" value="D16R6245NJ" readonly style="background:#e9ecef;">
+                    <input type="text" id="refProduto" value="D17R754GS" readonly style="background:#e9ecef;">
                 </div>
                 <div class="cell cell-red">Ø FURO CENTRO</div>
                 <div class="cell cell-red">COTA Z (mm)</div>
@@ -80,12 +78,12 @@
                 <div class="cell"><div class="cell-title">Nº Origem do Aço</div><input type="text" id="origemAco"></div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblFuroMin">62,0</div><div class="lim-val" id="lblFuroMax">62,4</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblFuroMin">75,3</div><div class="lim-val" id="lblFuroMax">75,7</div></div>
                     <input type="number" step="0.01" id="furoCentro" required>
                 </div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblZMin">34,25</div><div class="lim-val" id="lblZMax">34,75</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblZMin">48,0</div><div class="lim-val" id="lblZMax">48,5</div></div>
                     <input type="number" step="0.01" id="cotaZ" required>
                 </div>
 
@@ -95,15 +93,15 @@
                 <div class="cell cell-red">COTA H (mm)</div>
 
                 <div class="cell"><div class="cell-title">Nº Satélites</div><input type="text" id="satelites" value="6" readonly></div>
-                <div class="cell"><div class="cell-title">Ø Furo Satélite (mm)</div><input type="text" id="furoSatelite" value="11,5" readonly></div>
+                <div class="cell"><div class="cell-title">Ø Furo Satélite (mm)</div><input type="text" id="furoSatelite" value="9,25" readonly></div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblEspMin">4,25</div><div class="lim-val" id="lblEspMax">4,75</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblEspMin">3,75</div><div class="lim-val" id="lblEspMax">4,25</div></div>
                     <input type="number" step="0.01" id="espessura">
                 </div>
                 <div class="cell">
                     <div class="sub-grid"><div>mínimo</div><div>máximo</div></div>
-                    <div class="sub-grid"><div class="lim-val" id="lblHMin">8,9</div><div class="lim-val" id="lblHMax">9,4</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblHMin">14,875</div><div class="lim-val" id="lblHMax">15,375</div></div>
                     <input type="number" step="0.01" id="cotaH" required>
                 </div>
 
@@ -116,7 +114,7 @@
                 </div>
                 <div class="cell cell-red">
                     <div>Ø BLANK (mm)</div>
-                    <div class="sub-grid"><div class="lim-val" id="lblBlankMin">406,4</div><div class="lim-val" id="lblBlankMax">407,4</div></div>
+                    <div class="sub-grid"><div class="lim-val" id="lblBlankMin">431,3</div><div class="lim-val" id="lblBlankMax">432,3</div></div>
                     <input type="number" step="0.1" id="blank">
                 </div>
             </div>
@@ -127,123 +125,44 @@
             </div>
         </form>
     </div>
-
-    <!-- TELA 2: GESTÃO DAS 3 BASES (CARREGAMENTO EXCEL) -->
-    <div id="carregamento" class="tab-content">
-        <div class="header-title">GESTÃO DE BASES CARREGADAS (EXCEL)</div>
-        
-        <div style="border: 1px dashed #007bff; background: #f0f7ff; padding: 12px; margin-bottom: 15px; border-radius: 4px;">
-            <strong>Upload do Ficheiro Excel (.xlsm / .xlsx):</strong>
-            <form id="form-importar-excel" style="display: inline-flex; gap: 10px; margin-left: 10px;">
-                <input type="file" id="excelFile" accept=".xlsx, .xlsm" required>
-                <button type="submit" style="background:#0056b3; color:white; border:none; padding:5px 10px; font-weight:bold; cursor:pointer;">Atualizar Todas as Bases</button>
-            </form>
-            <span id="status-sincro" style="font-size:12px; font-weight:bold; margin-left:10px;"></span>
-        </div>
-
-        <div class="base-box">
-            <h4 style="margin:0 0 5px 0; color:#0056b3;">1. Base de Ordens de Produção (Aba 'opabertas')</h4>
-            <table>
-                <thead><tr><th>Nº da OP</th><th>Referência Produto</th><th>Status</th></tr></thead>
-                <tbody id="tbl-ops"><tr><td colspan="3">A carregar...</td></tr></tbody>
-            </table>
-        </div>
-
-        <div class="base-box">
-            <h4 style="margin:0 0 5px 0; color:#d9534f;">2. Base de Tolerâncias Dimensionais (Aba 'base')</h4>
-            <table>
-                <thead><tr><th>Ref. Produto</th><th>Ø Furo Centro (Mín/Máx)</th><th>Cota Z (Mín/Máx)</th><th>Cota H (Mín/Máx)</th><th>Ø Blank (Mín/Máx)</th></tr></thead>
-                <tbody id="tbl-tolerancias"><tr><td colspan="5">A carregar...</td></tr></tbody>
-            </table>
-        </div>
-
-        <div class="base-box">
-            <h4 style="margin:0 0 5px 0; color:#5cb85c;">3. Base de Operadores e Colaboradores (Aba 'colaboradores')</h4>
-            <table>
-                <thead><tr><th>Nome</th><th>Cargo</th><th>Email</th></tr></thead>
-                <tbody id="tbl-operadores"><tr><td colspan="3">A carregar...</td></tr></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- TELA 3: CONSULTA CEP -->
-    <div id="cep" class="tab-content">
-        <div class="header-title">ANÁLISE DE CAPACIDADE CEP</div>
-        <p style="text-align:center;">Gráficos e Índices de Capacidade.</p>
-    </div>
 </div>
 
 <script>
-    // Dicionário local de retaguarda imediato para garantir fluidez mesmo se a API tardar
     const baseLocalTolerancias = {
-        "87362": { ref: "D16R6245NJ", furoMin: 62.0, furoMax: 62.4, zMin: 34.25, zMax: 34.75, hMin: 8.9, hMax: 9.4, blankMin: 406.4, blankMax: 407.4 },
-        "87359": { ref: "01087500B", furoMin: 71.3, furoMax: 71.7, zMin: 48.00, zMax: 48.50, hMin: 20.00, hMax: 20.50, blankMin: 450.0, blankMax: 455.0 }
+        "87356": { ref: "D17R754GS", furoMin: 75.3, furoMax: 75.7, espMin: 3.75, espMax: 4.25, zMin: 48.0, zMax: 48.5, hMin: 14.875, hMax: 15.375, blankMin: 431.3, blankMax: 432.3, satelites: 6, furoSatelite: 9.25 },
+        "87362": { ref: "D16R6245NJ", furoMin: 62.0, furoMax: 62.4, espMin: 4.25, espMax: 4.75, zMin: 34.25, zMax: 34.75, hMin: 8.90, hMax: 9.40, blankMin: 406.4, blankMax: 407.4, satelites: 6, furoSatelite: 11.5 },
+        "87359": { ref: "01087500B", furoMin: 71.3, furoMax: 71.7, espMin: 4.25, espMax: 4.75, zMin: 48.00, zMax: 48.50, hMin: 20.00, hMax: 20.50, blankMin: 450.0, blankMax: 455.0, satelites: 6, furoSatelite: 11.5 }
     };
-
-    function openTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        event.currentTarget.classList.add('active');
-
-        if (tabName === 'carregamento') carregar3Bases();
-    }
 
     function aplicarDadosNaTela(ref, espec) {
         document.getElementById('refProduto').value = ref;
         document.getElementById('lblFuroMin').innerText = espec.furoMin;
         document.getElementById('lblFuroMax').innerText = espec.furoMax;
+        document.getElementById('lblEspMin').innerText = espec.espMin || espec.espessuraMin;
+        document.getElementById('lblEspMax').innerText = espec.espMax || espec.espessuraMax;
         document.getElementById('lblZMin').innerText = espec.zMin;
         document.getElementById('lblZMax').innerText = espec.zMax;
         document.getElementById('lblHMin').innerText = espec.hMin;
         document.getElementById('lblHMax').innerText = espec.hMax;
         document.getElementById('lblBlankMin').innerText = espec.blankMin;
         document.getElementById('lblBlankMax').innerText = espec.blankMax;
+        document.getElementById('satelites').value = espec.satelites;
+        document.getElementById('furoSatelite').value = espec.furoSatelite;
     }
 
     function buscarEspecificacaoOp() {
         const op = document.getElementById('opi').value.trim();
-        
-        // Atualização instantânea cliente via base local
         if (baseLocalTolerancias[op]) {
-            const item = baseLocalTolerancias[op];
-            aplicarDadosNaTela(item.ref, item);
+            aplicarDadosNaTela(baseLocalTolerancias[op].ref, baseLocalTolerancias[op]);
         }
 
-        // Consulta complementar ao Backend API
         fetch(`/api/Cep/especificacao/${op}`)
             .then(res => res.ok ? res.json() : null)
             .then(data => {
-                if (data && data.espec) {
-                    aplicarDadosNaTela(data.refProduto, data.espec);
-                }
+                if (data && data.espec) aplicarDadosNaTela(data.refProduto, data.espec);
             }).catch(() => {});
     }
 
-    function carregar3Bases() {
-        fetch(`/api/Cep/bases-carregadas`)
-            .then(res => res.json())
-            .then(data => {
-                let htmlOp = '';
-                data.ordensProducao.forEach(o => htmlOp += `<tr><td><strong>${o.numeroOp}</strong></td><td>${o.refProduto}</td><td>${o.status}</td></tr>`);
-                document.getElementById('tbl-ops').innerHTML = htmlOp;
-
-                let htmlTol = '';
-                data.tolerancias.forEach(t => htmlTol += `<tr><td><strong>${t.refProduto}</strong></td><td>${t.furoMin} - ${t.furoMax}</td><td>${t.zMin} - ${t.zMax}</td><td>${t.hMin} - ${t.hMax}</td><td>${t.blankMin} - ${t.blankMax}</td></tr>`);
-                document.getElementById('tbl-tolerancias').innerHTML = htmlTol;
-
-                let htmlOpere = '';
-                let selectOpere = '';
-                data.operadores.forEach(p => {
-                    htmlOpere += `<tr><td><strong>${p.nome}</strong></td><td>${p.cargo}</td><td>${p.email}</td></tr>`;
-                    selectOpere += `<option value="${p.nome}">${p.nome}</option>`;
-                });
-                document.getElementById('tbl-operadores').innerHTML = htmlOpere;
-                document.getElementById('operador').innerHTML = selectOpere;
-            }).catch(() => {});
-    }
-
-    // Executa no carregamento inicial
     buscarEspecificacaoOp();
 </script>
 </body>
